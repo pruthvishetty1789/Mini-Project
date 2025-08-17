@@ -1,4 +1,4 @@
-# Project Name
+# HearMe
 A Smart App-Based Communication and Emergency Assistance Tool for Deaf/Mute Users
 
 ---
