@@ -6,6 +6,7 @@ A Smart App-Based Communication and Emergency Assistance Tool for Deaf/Mute User
 ## Folder Structure
 mini-project/
 ├── frontend
+
 └── backend
 
 ---
