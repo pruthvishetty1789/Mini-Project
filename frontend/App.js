@@ -1,29 +1,47 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useContext } from "react";
+import { View, ActivityIndicator } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { AuthProvider, default as AuthContext } from "./src/context/AuthContext";
 
-export default function App() {
-  const [message, setMessage] = useState("");
+// Import your screens and navigators
+import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
+import LoginScreen from "./src/screens/LoginScreen"; 
+import RegisterScreen from "./src/screens/RegisterScreen"; 
+import SplashScreen from "./src/screens/SplashScreen"; // Import the SplashScreen
 
-  useEffect(() => {
-   fetch("http://10.27.81.231:5000/") // use this IP instead of localhost
+const Stack = createStackNavigator();
 
+function AppNav() {
+  const { userToken, isLoading } = useContext(AuthContext);
 
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch((err) => console.error(err));
-  }, []);
+  if (isLoading) {
+    // Show the SplashScreen explicitly while authentication is being checked
+    return <SplashScreen />;
+  }
 
   return (
-    <View style={styles.container}>
-      <Text>{message || "Loading..."}</Text>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {userToken == null ? (
+          // No token found, show the authentication screens
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
+        ) : (
+          // A token was found, show the main app
+          <Stack.Screen name="MainApp" component={BottomTabNavigator} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppNav />
+    </AuthProvider>
+  );
+}

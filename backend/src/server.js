@@ -1,22 +1,116 @@
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import connectDB from "./config/db.js";
+// server.js
 
+// Load environment variables from .env file
+import 'dotenv/config';
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import cors from 'cors';
+
+// Import the database connection function
+import connectDB from './config/db.js';
+
+// Import the User model from its dedicated file
+import { User } from './models/User.js';
 
 const app = express();
-
-// Middleware
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
-// Test route
-app.get("/", (req, res) => {
-  res.json({ message: "Backend is connected to frontend!" });
+// Connect to the database
+connectDB();
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// Registration endpoint
+app.post('/api/register', async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: 'Email already in use.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      contacts: [] // Initialize with an empty contacts array
+    });
+
+    await newUser.save();
+
+    res.status(201).json({ message: 'User registered successfully!' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error during registration.', error: error.message });
+  }
 });
 
-// Start server
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+// Login endpoint
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials.' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials.' });
+    }
+
+    const payload = { userId: user._id };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token, message: 'Logged in successfully!' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error during login.', error: error.message });
+  }
 });
+
+// Middleware to protect routes that require authentication
+const auth = (req, res, next) => {
+  try {
+    const token = req.header('Authorization').replace('Bearer ', '');
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Please authenticate.' });
+  }
+};
+
+// Example of a protected route
+app.get('/api/profile', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select('-password'); // Exclude password
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    res.json({ name: user.name, email: user.email });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error.', error: error.message });
+  }
+});
+
+// NEW: Protected route to get user's contacts
+app.get('/api/contacts', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    res.json(user.contacts || []);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error.', error: error.message });
+  }
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
