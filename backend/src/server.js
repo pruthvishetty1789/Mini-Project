@@ -24,92 +24,102 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // Registration endpoint
 app.post('/api/register', async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({ message: 'Email already in use.' });
+  try {
+    const { name, email, phone, password } = req.body;
+    
+    // Check if email or phone already exists
+    const existingUserEmail = await User.findOne({ email });
+    if (existingUserEmail) {
+      return res.status(409).json({ message: 'Email already in use.' });
+    }
+
+    const existingUserPhone = await User.findOne({ phone });
+    if (existingUserPhone) {
+        return res.status(409).json({ message: 'Phone number already in use.' });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword,
-      contacts: [] // Initialize with an empty contacts array
-    });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    const newUser = new User({
+      name,
+      email,
+      phone,
+      password: hashedPassword,
+      contacts: []
+    });
 
-    await newUser.save();
+    await newUser.save();
 
-    res.status(201).json({ message: 'User registered successfully!' });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error during registration.', error: error.message });
-  }
+    res.status(201).json({ message: 'User registered successfully!' });
+  } catch (error) {
+    // Log the full error object to the console
+    console.error('Error during registration:', error); 
+    
+    res.status(500).json({ message: 'Server error during registration.', error: error.message });
+  }
 });
 
-// Login endpoint
+// Login endpoint (no changes needed here as login is by email)
 app.post('/api/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials.' });
-    }
+  try {
+    const { email, password } = req.body;
+    
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials.' });
+    }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials.' });
-    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials.' });
+    }
 
-    const payload = { userId: user._id };
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+    const payload = { userId: user._id };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 
-    res.json({ token, message: 'Logged in successfully!' });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error during login.', error: error.message });
-  }
+    res.json({ token, message: 'Logged in successfully!' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error during login.', error: error.message });
+  }
 });
 
 // Middleware to protect routes that require authentication
 const auth = (req, res, next) => {
-  try {
-    const token = req.header('Authorization').replace('Bearer ', '');
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: 'Please authenticate.' });
-  }
+  try {
+    const token = req.header('Authorization').replace('Bearer ', '');
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Please authenticate.' });
+  }
 };
 
 // Example of a protected route
 app.get('/api/profile', auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.userId).select('-password'); // Exclude password
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
-    }
-    res.json({ name: user.name, email: user.email });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error.', error: error.message });
-  }
+  try {
+    const user = await User.findById(req.user.userId).select('-password'); // Exclude password
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    res.json({ name: user.name, email: user.email, phone: user.phone }); // Added phone to the response
+  } catch (error) {
+    res.status(500).json({ message: 'Server error.', error: error.message });
+  }
 });
 
 // NEW: Protected route to get user's contacts
 app.get('/api/contacts', auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
-    }
-    res.json(user.contacts || []);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error.', error: error.message });
-  }
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    res.json(user.contacts || []);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error.', error: error.message });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
