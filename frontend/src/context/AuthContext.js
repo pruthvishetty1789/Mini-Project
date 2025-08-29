@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   // This function fetches the user's profile and sets it in state
   const fetchProfile = async (token) => {
     try {
-      const response = await axios.get('http://10.85.208.231:5000/api/profile', {
+      const response = await axios.get('http://192.168.43.220:5000/api/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ userToken, isLoading, profile, login, logout, updateProfile }}>
+    <AuthContext.Provider value={{ userToken, setUserToken, isLoading, profile, login, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

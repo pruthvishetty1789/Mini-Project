@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -10,28 +11,30 @@ import {
   Platform,
   Dimensions,
   Alert,
-  ActivityIndicator // <-- This line was missing
+  ActivityIndicator
 } from 'react-native';
 import axios from 'axios';
-import AuthContext from '../context/AuthContext';
+import AuthContext from '../context/AuthContext'; // Make sure this path is correct
 
 const { width } = Dimensions.get('window');
-
-const API_URL = 'http://10.85.208.231:5000/api'; 
+const API_URL = 'http://192.168.43.220:5000/api';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useContext(AuthContext);
+  const { setUserToken } = useContext(AuthContext); // <-- Add this line
 
   const handleLogin = async () => {
     setIsLoading(true);
     try {
       const response = await axios.post(`${API_URL}/login`, { email, password });
-      
-      await login(response.data.token); 
-      
+      const token = response.data.token;
+      console.log(token);
+
+      await AsyncStorage.setItem('userToken', token);
+      setUserToken(token); // <-- This triggers navigation
+
       Alert.alert('Success', 'Logged in successfully!');
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';

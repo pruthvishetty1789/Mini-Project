@@ -17,18 +17,19 @@ import axios from 'axios';
 const { width } = Dimensions.get('window');
 
 // Replace with your backend's IP address and port
-const API_URL = 'http://10.85.208.231:5000/api'; 
+const API_URL = 'http://192.168.43.220:5000/api'; 
 
 export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phoneNo, setPhoneNo]=useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/register`, { name, email, password });
+      const response = await axios.post(`${API_URL}/register`, { name, email, password,phoneNo });
       Alert.alert('Success', response.data.message);
       navigation.navigate('Login');
     } catch (error) {
@@ -85,6 +86,15 @@ export default function RegisterScreen({ navigation }) {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+        />
+
+        <TextInput
+        style={styles.input}
+        placeholder="Phone Number"
+        placeholderTextColor="#A9A9A9"
+        value={phoneNo}
+        onChangeText={setPhoneNo}
+        keyboardType="phone-pad"
         />
 
         <TouchableOpacity style={styles.registerButton} onPress={handleRegister} disabled={isLoading}>

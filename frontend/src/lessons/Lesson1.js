@@ -23,7 +23,7 @@ export default function Lesson1() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.lessonTitle}>Lesson 1: Alphabets</Text>
 
-      {/* Question 1: A */}
+    
       <View style={styles.questionContainer}>
         <Text style={styles.questionText}>A</Text>
         <TouchableOpacity onPress={() => handleImagePress(require('../../assets/a.png'))}>
@@ -39,7 +39,7 @@ export default function Lesson1() {
         </TouchableOpacity>
       </View>
 
-      {/* Question 2: Please */}
+     
       <View style={styles.questionContainer}>
         <Text style={styles.questionText}>B</Text>
         <TouchableOpacity onPress={() => handleImagePress(require('../../assets/b.png'))}>
@@ -55,7 +55,7 @@ export default function Lesson1() {
         </TouchableOpacity>
       </View>
 
-      {/* Question 3: Sorry */}
+  
       <View style={styles.questionContainer}>
         <Text style={styles.questionText}>C</Text>
         <TouchableOpacity onPress={() => handleImagePress(require('../../assets/c.png'))}>
@@ -71,7 +71,7 @@ export default function Lesson1() {
         </TouchableOpacity>
       </View>
 
-      {/* Question 4: Yes */}
+   
       <View style={styles.questionContainer}>
         <Text style={styles.questionText}>D</Text>
         <TouchableOpacity onPress={() => handleImagePress(require('../../assets/d.png'))}>
@@ -87,7 +87,7 @@ export default function Lesson1() {
         </TouchableOpacity>
       </View>
 
-      {/* Question 5: No */}
+     
       <View style={styles.questionContainer}>
         <Text style={styles.questionText}>No</Text>
         <TouchableOpacity onPress={() => handleImagePress(require('../../assets/no.jpg'))}>
