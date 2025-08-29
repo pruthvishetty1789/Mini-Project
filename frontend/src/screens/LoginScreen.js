@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -23,7 +22,7 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { setUserToken } = useContext(AuthContext); // <-- Add this line
+  const { login } = useContext(AuthContext); // <-- Add this line
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -31,10 +30,7 @@ export default function LoginScreen({ navigation }) {
       const response = await axios.post(`${API_URL}/login`, { email, password });
       const token = response.data.token;
       console.log(token);
-
-      await AsyncStorage.setItem('userToken', token);
-      setUserToken(token); // <-- This triggers navigation
-
+      await login(token);
       Alert.alert('Success', 'Logged in successfully!');
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';

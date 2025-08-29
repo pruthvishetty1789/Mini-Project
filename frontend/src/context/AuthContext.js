@@ -12,6 +12,8 @@ export const AuthProvider = ({ children }) => {
   // This function fetches the user's profile and sets it in state
   const fetchProfile = async (token) => {
     try {
+      console.log('Sending token:', token);
+
       const response = await axios.get('http://192.168.43.220:5000/api/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
