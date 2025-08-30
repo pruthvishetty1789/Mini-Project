@@ -1,3 +1,4 @@
+
 // controllers/auth.js
 
 const bcrypt = require('bcryptjs');
@@ -6,18 +7,17 @@ const User = require('../models/User'); // Import the User model
 
 // Handle user registration
 exports.registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
+  const { name, email, password,phoneNo } = req.body;
+  if (!name || !email || !password||!phoneNo) {
     return res.status(400).json({ message: 'All fields are required.' });
   }
-
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: 'Email already in use.' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({ name, email, password: hashedPassword,phoneNo:normalizedPhone });
     await newUser.save();
 
     res.status(201).json({ message: 'User registered successfully!' });
