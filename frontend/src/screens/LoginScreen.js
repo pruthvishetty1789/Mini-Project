@@ -29,7 +29,7 @@ export default function LoginScreen({ navigation }) {
     try {
       const response = await axios.post(`${API_URL}/login`, { email, password });
       const token = response.data.token;
-      console.log(token);
+      console.log("Login Token:",token);
       await login(token);
       Alert.alert('Success', 'Logged in successfully!');
     } catch (error) {
