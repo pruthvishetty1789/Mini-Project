@@ -48,7 +48,7 @@ router.post('/sync-contacts', auth, async (req, res) => {
     console.log("nonAppUsers:", nonAppUsers);
 
     res.json({
-      friends: appUserPhones,        // Already registered in app
+      friends: appUsers,        // Already registered in app
       invitable: nonAppUsers,   // Not yet registered
     });
 
