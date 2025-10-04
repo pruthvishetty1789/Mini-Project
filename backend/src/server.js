@@ -13,6 +13,9 @@ import connectDB from './config/db.js';
 // Import the User model from its dedicated file
 import { User } from './models/User.js';
 
+import { parsePhoneNumberWithError} from 'libphonenumber-js';
+import contactRoutes from './routes/contactRoutes.js';
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -21,6 +24,7 @@ app.use(cors());
 connectDB();
 
 const JWT_SECRET = process.env.JWT_SECRET;
+app.use('/api/contacts', contactRoutes);
 
 // Registration endpoint
 app.post('/api/register', async (req, res) => {

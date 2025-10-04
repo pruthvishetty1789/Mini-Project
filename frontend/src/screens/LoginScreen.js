@@ -17,7 +17,7 @@ import AuthContext from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
 
-const API_URL = 'http://10.85.208.231:5000/api'; 
+const API_URL = 'http://10.151.99.231:5000/api'; 
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
