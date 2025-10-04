@@ -75,7 +75,7 @@ const ConversationScreen = () => {
   };
 
   const sendAudioForTranscription = async (uri) => {
-    const apiKey = 'AIzaSyDPFeMhI9BxfGOnxVfUas8Z_L5AhfnUiVg';
+    const apiKey = 'Your_Gemini_API';
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
     try {
