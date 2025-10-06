@@ -1,42 +1,41 @@
 import React, { useContext } from "react";
-import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AuthProvider, default as AuthContext } from "./src/context/AuthContext";
+import SocketManager from "./src/SocketManager";
 
-// Import your screens and navigators
+// Import screens
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
 import LoginScreen from "./src/screens/LoginScreen"; 
 import RegisterScreen from "./src/screens/RegisterScreen"; 
-import SplashScreen from "./src/screens/SplashScreen"; // Import the SplashScreen
-
+import SplashScreen from "./src/screens/SplashScreen";
 
 const Stack = createStackNavigator();
 
 function AppNav() {
+  console.log("🔍 AppNav rendering");
   const { userToken, isLoading } = useContext(AuthContext);
 
   if (isLoading) {
-    // Show the SplashScreen explicitly while authentication is being checked
+    // Show SplashScreen while checking authentication
     return <SplashScreen />;
   }
-
+  console.log("userToken in AppNav:", userToken);
   return (
     <NavigationContainer>
+      {/* Mount SocketManager only if user is logged in */}
+      {userToken != null && <SocketManager />}
+    
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userToken == null ? (
-          // No token found, show the authentication screens
+          // Authentication screens
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
-          
           </>
         ) : (
-          // A token was found, show the main app
-           <>
+          // Main app
           <Stack.Screen name="MainApp" component={BottomTabNavigator} />
-         
-        </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

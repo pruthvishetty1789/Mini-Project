@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal } fr
 import * as Speech from 'expo-speech';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
-export default function Lesson1() {
+export default function Lesson2() {
   const [isViewerVisible, setIsViewerVisible] = useState(false);
   const [viewerImages, setViewerImages] = useState([]);
 
@@ -19,89 +19,105 @@ export default function Lesson1() {
     setIsViewerVisible(true);
   };
 
+  const signs = [
+  {
+    label: 'Hello',
+    image: require('../../assets/hello.jpg'),
+    zoomImage: require('../../assets/hello.jpg'),
+    description: 'This sign is a universal greeting used to say "hello" or "hi" to someone.',
+    speech: 'Hello',
+  },
+  {
+    label: 'Please',
+    image: require('../../assets/please.jpg'),
+    zoomImage: require('../../assets/please.jpg'),
+    description: 'The sign for "please" is a polite way to make a request.',
+    speech: 'Please',
+  },
+  {
+    label: 'Sorry',
+    image: require('../../assets/sorry.jpg'),
+    zoomImage: require('../../assets/sorry.jpg'),
+    description: 'This sign is used to apologize for a mistake.',
+    speech: 'Sorry',
+  },
+  {
+    label: 'Yes',
+    image: require('../../assets/yes.jpg'),
+    zoomImage: require('../../assets/yes.jpg'),
+    description: 'This sign indicates an affirmative response.',
+    speech: 'Yes',
+  },
+  {
+    label: 'No',
+    image: require('../../assets/no.jpg'),
+    zoomImage: require('../../assets/no.jpg'),
+    description: 'This sign is a common way to give a negative response.',
+    speech: 'No',
+  },
+ {
+    label: 'Thank You', 
+    image: require('../../assets/thanku.jpg'),
+    zoomImage: require('../../assets/thanku.jpg'),
+    description: 'This sign is used to express gratitude.',
+    speech: 'Thank You',
+  },
+  {
+    label: 'I Love You',
+    image: require('../../assets/iloveu.jpg'),
+    zoomImage: require('../../assets/iloveu.jpg'),
+    description: 'This sign is used to express love and affection.',
+    speech: 'I Love You',
+  },
+  {
+    label:'House',
+    image: require('../../assets/house.jpg'),
+    zoomImage: require('../../assets/house.jpg'),
+    description: 'This sign represents a house or home.',
+    speech: 'House',
+  },
+  {label:'Family',
+    image: require('../../assets/family.jpg'),
+    zoomImage: require('../../assets/family.jpg'),
+    description: 'This sign represents family or relatives.',
+    speech: 'Family',
+  },
+  {
+    label:'Love',
+    image: require('../../assets/love.jpg'),
+    zoomImage: require('../../assets/love.jpg'),
+    description: 'This sign represents love or affection.',
+    speech: 'Love',
+  },
+  {
+    label: 'Bye',
+    image: require('../../assets/bye.jpg'),
+    zoomImage: require('../../assets/bye.jpg'),
+    description: 'This sign is used to say goodbye.',
+    speech: 'Bye',
+  }
+];
+
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.lessonTitle}>Lesson 1: Alphabets</Text>
-
-      {/* Question 1: A */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>A</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/a.png'))}>
-          <Image
-            source={require('../../assets/hello.jpg')}
-            style={styles.signImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <Text style={styles.description}>TThis sign is a universal greeting used to say "hello" or "hi" to someone.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('Hello')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Question 2: Please */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>Please</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/please.jpg'))}>
-          <Image
-            source={require('../../assets/please.jpg')}
-            style={styles.signImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <Text style={styles.description}>The sign for "please" is a polite way to make a request.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('Please')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Question 3: Sorry */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>Sorry</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/sorry.jpg'))}>
-          <Image
-            source={require('../../assets/sorry.jpg')}
-            style={styles.signImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <Text style={styles.description}>This sign is used to apologize for a mistake.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('Sorry')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Question 4: Yes */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>Yes</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/yes.jpg'))}>
-          <Image
-            source={require('../../assets/yes.jpg')}
-            style={styles.signImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <Text style={styles.description}>This sign indicates an affirmative response.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('Yes')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Question 5: No */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>No</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/no.jpg'))}>
-          <Image
-            source={require('../../assets/no.jpg')}
-            style={styles.signImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <Text style={styles.description}>This sign is a common way to give a negative response.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('No')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.lessonTitle}>Lesson 2: Basic Signs</Text>
+       {signs.map((sign, index) => (
+  <View key={index} style={styles.questionContainer}>
+    <Text style={styles.questionText}>{sign.label}</Text>
+    <TouchableOpacity onPress={() => handleImagePress(sign.zoomImage)}>
+      <Image
+        source={sign.image}
+        style={styles.signImage}
+        resizeMode="contain"
+      />
+    </TouchableOpacity>
+    <Text style={styles.description}>{sign.description}</Text>
+    <TouchableOpacity style={styles.decodeButton} onPress={() => speak(sign.speech)}>
+      <Text style={styles.buttonText}>Speak</Text>
+    </TouchableOpacity>
+  </View>
+))}
 
       {/* The Modal for the Image Viewer */}
       <Modal

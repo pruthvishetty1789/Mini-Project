@@ -6,6 +6,8 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import cors from 'cors';
+import http from 'http';
+import { Server } from 'socket.io';
 
 // Import the database connection function
 import connectDB from './config/db.js';
@@ -113,10 +115,12 @@ const auth = (req, res, next) => {
 app.get('/api/profile', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select('-password'); // Exclude password
+    console.log("Fetched user:", user);
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
-    res.json({ name: user.name, email: user.email });
+    res.json({ name: user.name, email: user.email, phoneNo: user.phoneNo });
+    console.log("Profile sent:", { name: user.name, email: user.email, phoneNo: user.phoneNo });
   } catch (error) {
     res.status(500).json({ message: 'Server error.', error: error.message });
   }
@@ -137,4 +141,48 @@ app.get('/api/contacts', auth, async (req, res) => {
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+//--------------------------------------------------------//
+//socket-io setup
+// 1. Create HTTP server from Express app
+const server = http.createServer(app);
+
+// 2. Initialize Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: "*", // for testing, allow all origins
+    methods: ["GET", "POST"],
+  },
+});
+
+// Store online users: phoneNumber -> socketId
+const activeUsers = {};
+
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+
+  // Register the user's phone number
+  socket.on("register", (phoneNo) => {
+    console.log(`📲 User registered with phoneNo: ${phoneNo}, socketId: ${socket.id}`);
+    activeUsers[phoneNo] = socket.id;
+    console.log("Active users:", activeUsers);
+    socket.emit("registered", { phoneNo, socketId: socket.id });
+  });
+
+  // Handle disconnect
+  socket.on("disconnect", () => {
+    for (let phone in activeUsers) {
+      if (activeUsers[phone] === socket.id) {
+        delete activeUsers[phone];
+        break;
+      }
+    }
+    console.log("User disconnected. Active users:", activeUsers);
+  });
+});
+
+
+// 3. Start the server
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+

@@ -23,6 +23,8 @@ import Lesson5 from '../lessons/Lesson5';
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
+
+
 // Create a stack navigator for the "Home" tab
 function HomeStackScreen() {
   return (
@@ -59,6 +61,7 @@ function ProfileStackScreen() {
 
 export default function BottomTabNavigator() {
   return (
+    <>
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
@@ -81,5 +84,6 @@ export default function BottomTabNavigator() {
       <Tab.Screen name="Emergency" component={EmergencyScreen} />
       <Tab.Screen name="Profile" component={ProfileStackScreen} />
     </Tab.Navigator>
+    </>
   );
 }

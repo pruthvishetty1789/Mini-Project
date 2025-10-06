@@ -16,49 +16,83 @@ export default function Lesson3() {
     setIsViewerVisible(true);
   };
 
+  const signs = [
+  {
+    label: 'Father',
+    image: require('../../assets/father.jpg'),
+    zoomImage: require('../../assets/father.jpg'),
+    description: 'This sign represents a father or dad',
+    speech: 'Father',
+  },
+  {
+    label: 'Mother',
+    image: require('../../assets/mother.jpg'),
+    zoomImage: require('../../assets/mother.jpg'),
+    description: 'This sign represents a mother or mom',
+    speech: 'Mother',
+  },
+  {
+    label: 'Brother',   
+    image: require('../../assets/brother.jpg'),
+    zoomImage: require('../../assets/brother.jpg'),
+    description: 'This sign represents a brother or male sibling',
+    speech: 'Brother',
+  },
+  {
+    label: 'Sister', 
+    image: require('../../assets/sister.jpg'),
+    zoomImage: require('../../assets/sister.jpg'),
+    description: 'This sign represents a sister or female sibling',
+    speech: 'Sister',
+  },
+{
+  label:'Grandfather',
+  image: require('../../assets/grandpa.jpg'),
+  zoomImage: require('../../assets/grandpa.jpg'),
+  description: 'This sign represents a grandfather',
+  speech: 'Grandfather',
+},
+{  label:'Grandmother',
+  image: require('../../assets/grandma.jpg'),
+  zoomImage: require('../../assets/grandma.jpg'),
+  description: 'This sign represents a grandmother',
+  speech: 'Grandmother',
+}
+,{
+  label:'Uncle',
+  image: require('../../assets/uncle.jpg'),
+  zoomImage: require('../../assets/uncle.jpg'),
+  description: 'This sign represents an uncle', 
+  speech: 'Uncle',    
+},{
+  label:'Aunt',
+  image: require('../../assets/aunt.jpg'),
+  zoomImage: require('../../assets/aunt.jpg'),
+  description: 'This sign represents an aunt',
+  speech: 'Aunt',
+}
+]
+
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.lessonTitle}>Lesson 3: Common Phrases</Text>
-
-      {/* Phrase 1: "I am hungry" */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>I am hungry</Text>
-        
-        {/* This single View now contains all three images */}
-        <View style={styles.imageRow}>
-          {/* Sign for "I" */}
-          <TouchableOpacity onPress={() => handleImagePress(require('../../assets/a.png'))}>
-            <Image
-              source={require('../../assets/a.png')}
-              style={styles.signImage}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-
-          {/* Sign for "am" */}
-          <TouchableOpacity onPress={() => handleImagePress(require('../../assets/b.png'))}>
-            <Image
-              source={require('../../assets/b.png')}
-              style={styles.signImage}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-
-          {/* Sign for "hungry" */}
-          <TouchableOpacity onPress={() => handleImagePress(require('../../assets/c.png'))}>
-            <Image
-              source={require('../../assets/c.png')}
-              style={styles.signImage}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.description}>This phrase is used to express that you are hungry.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('I am hungry')}>
-          <Text style={styles.buttonText}>Speak Phrase</Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.lessonTitle}>Lesson 3: Family</Text>
+{signs.map((sign, index) => (
+  <View key={index} style={styles.questionContainer}>
+    <Text style={styles.questionText}>{sign.label}</Text>
+    <TouchableOpacity onPress={() => handleImagePress(sign.zoomImage)}>
+      <Image
+        source={sign.image}
+        style={styles.signImage}
+        resizeMode="contain"
+      />
+    </TouchableOpacity>
+    <Text style={styles.description}>{sign.description}</Text>
+    <TouchableOpacity style={styles.decodeButton} onPress={() => speak(sign.speech)}>
+      <Text style={styles.buttonText}>Speak</Text>
+    </TouchableOpacity>
+  </View>
+))}
 
       {/* The Modal for the Image Viewer */}
       <Modal

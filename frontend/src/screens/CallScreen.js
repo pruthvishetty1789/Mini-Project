@@ -17,6 +17,7 @@ const CallScreen = () => {
   useEffect(() => {
     (async () => {
       const { status } = await Contacts.requestPermissionsAsync();
+      console.log('Permission status:', status);
       setPermissionStatus(status);
     })();
   }, []);

@@ -1,85 +1,96 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
-import * as Speech from 'expo-speech'; // Import the library
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import * as Speech from 'expo-speech';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
-export default function Lesson1() {
+export default function Lesson5() {
+  const [isViewerVisible, setIsViewerVisible] = useState(false);
+  const [viewerImages, setViewerImages] = useState([]);
 
   const speak = (word) => {
-    Speech.speak(word, { language: 'en-IN' }); // 'en-IN' is for Indian English
+    // Note: The 'en-IN' language code for Indian English may need
+    // to be supported by the device's TTS engine.
+    Speech.speak(word, { language: 'en-IN' });
+  };
+
+  const handleImagePress = (imageSource) => {
+    // ImageViewer expects an array of objects with a 'url' property,
+    // where local images are passed via the 'props' object.
+    setViewerImages([{ url: '', props: { source: imageSource } }]);
+    setIsViewerVisible(true);
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.lessonTitle}>Lesson 1: Basic Introductions</Text>
+      <Text style={styles.lessonTitle}>Lesson 5: Simple Sentences</Text>
 
-      {/* Question 1: Hello */}
+      {/* Phrase 1: "what is your name?" */}
       <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>Hello</Text>
-        <Image
-          source={require('../../assets/hello.jpg')}
-          style={styles.signImage}
-          resizeMode="contain"
-        />
-        <Text style={styles.description}>This sign is a universal greeting.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('Hello')}>
-          <Text style={styles.buttonText}>Speak</Text>
+  <Text style={styles.questionText}>what is your name?</Text>
+  <View style={styles.imageRow}>
+  <Image
+                source={require('../../assets/qsn.png')}
+                style={styles.signImage}
+                resizeMode="contain"
+              />
+               <Image
+                source={require('../../assets/name.png')}
+                style={styles.signImage}
+                resizeMode="contain"
+              />
+  </View>
+  <Text style={styles.description}>This phrase is used to ask someone's name.</Text>
+  
+  <TouchableOpacity style={styles.decodeButton} onPress={() => speak('what is your name?')}>
+    <Text style={styles.buttonText}>Speak Phrase</Text>
+  </TouchableOpacity>
+</View>
+
+// This is the clean structure for the second phrase:
+<View style={styles.questionContainer}>
+  <Text style={styles.questionText}>My name is ...</Text>
+  <TouchableOpacity onPress={() => handleImagePress(require('../../assets/myname.png'))}>
+    <Image
+            source={require('../../assets/myname.png')}
+            style={styles.signImage}
+            resizeMode="contain"
+          />
+  </TouchableOpacity>
+  <Text style={styles.description}>This phrase is used to introduce oneself.</Text>
+  <TouchableOpacity style={styles.decodeButton} onPress={() => speak('my name is ..and tell your name')}>
+    <Text style={styles.buttonText}>Speak Phrase</Text>
+  </TouchableOpacity>
+</View>
+
+      {/* Phrase 3: "How are you? Ok" */}
+      <View style={styles.questionContainer}>
+        <Text style={styles.questionText}>How are you?</Text>
+        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/howru.jpeg'))}>
+          <Image
+            source={require('../../assets/howru.jpeg')}
+            style={styles.signImage}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+
+        <Text style={styles.description}>This phrase is used to ask someone how they are.</Text>
+        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('how are you?')}>
+          <Text style={styles.buttonText}>Speak Phrase</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Question 2: Please */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>Please</Text>
-        <Image
-          source={require('../../assets/please.jpg')}
-          style={styles.signImage}
-          resizeMode="contain"
+      {/* The Modal for the Image Viewer */}
+      <Modal
+        visible={isViewerVisible}
+        transparent={true}
+        onRequestClose={() => setIsViewerVisible(false)}
+      >
+        <ImageViewer
+          imageUrls={viewerImages}
+          onSwipeDown={() => setIsViewerVisible(false)}
+          enableSwipeDown
         />
-        <Text style={styles.description}>The sign for "please" is a polite way to make a request.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('Please')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
-      {/* Question 3 */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>Sorry</Text>
-        <Image
-          source={require('../../assets/sorry.jpg')}
-          style={styles.signImage}
-          resizeMode="contain"
-        />
-        <Text style={styles.description}>This sign is used to apologize for a mistake.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('Sorry')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
-       {/* Question 4 */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>Yes</Text>
-        <Image
-          source={require('../../assets/yes.jpg')}
-          style={styles.signImage}
-          resizeMode="contain"
-        />
-        <Text style={styles.description}>This sign indicates an affirmative response.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('Yes')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
-       {/* Question 5 */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>No</Text>
-        <Image
-          source={require('../../assets/no.jpg')}
-          style={styles.signImage}
-          resizeMode="contain"
-        />
-        <Text style={styles.description}>This sign is a common way to give a negative response.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('No')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
-      {/* ... continue for other words ... */}
-
+      </Modal>
     </ScrollView>
   );
 }
@@ -109,6 +120,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
+  },
+  imageRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 10,
   },
   questionText: {
     fontSize: 20,

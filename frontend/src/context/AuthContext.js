@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("Raw profile response:", response.data)
       setProfile(response.data);
     } catch (e) {
       console.error('Failed to fetch profile:', e);
