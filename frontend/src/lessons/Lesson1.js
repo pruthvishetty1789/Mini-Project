@@ -3,7 +3,38 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal } fr
 import * as Speech from 'expo-speech';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
+// ✅ Create a mapping of alphabets to their images
+const alphabetImages = {
+  a: require('../../assets/a.jpg'),
+  b: require('../../assets/b.jpg'),
+  c: require('../../assets/c.jpg'),
+  d: require('../../assets/d.jpg'),
+  e: require('../../assets/e.jpg'),
+  f: require('../../assets/f.jpg'),
+  g: require('../../assets/g.jpg'),
+  h: require('../../assets/h.jpg'),
+  i: require('../../assets/i.jpg'),
+  j: require('../../assets/j.jpg'),
+  k: require('../../assets/k.jpg'),
+  l: require('../../assets/l.jpg'),
+  m: require('../../assets/m.jpg'),
+  n: require('../../assets/n.jpg'),
+  o: require('../../assets/o.jpg'),
+  p: require('../../assets/p.jpg'),
+  q: require('../../assets/q.jpg'),
+  r: require('../../assets/r.jpg'),
+  s: require('../../assets/s.jpg'),
+  t: require('../../assets/t.jpg'),
+  u: require('../../assets/u.jpg'),
+  v: require('../../assets/v.jpg'),
+  w: require('../../assets/w.jpg'),
+  x: require('../../assets/x.jpg'),
+  y: require('../../assets/y.jpg'),
+  z: require('../../assets/z.jpg'),
+};
+
 export default function Lesson1() {
+  const alphabets = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
   const [isViewerVisible, setIsViewerVisible] = useState(false);
   const [viewerImages, setViewerImages] = useState([]);
 
@@ -12,9 +43,6 @@ export default function Lesson1() {
   };
 
   const handleImagePress = (imageSource) => {
-    // The library requires an array of objects with a 'url' key.
-    // For local images, you need to convert the require() path to a URL format.
-    // A simple way is to pass the require path itself.
     setViewerImages([{ url: '', props: { source: imageSource } }]);
     setIsViewerVisible(true);
   };
@@ -23,99 +51,36 @@ export default function Lesson1() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.lessonTitle}>Lesson 1: Alphabets</Text>
 
-      {/* Question 1: A */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>A</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/a.png'))}>
-          <Image
-            source={require('../../assets/a.png')}
-            style={styles.signImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <Text style={styles.description}>This sign is for the letter A.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('A')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
+      {alphabets.map((letter, index) => (
+        <View key={index} style={styles.questionContainer}>
+          <Text style={styles.questionText}>{letter}</Text>
 
-      {/* Question 2: Please */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>B</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/b.png'))}>
-          <Image
-            source={require('../../assets/b.png')}
-            style={styles.signImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <Text style={styles.description}>The sign for "please" is a polite way to make a request.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('B')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity onPress={() => handleImagePress(alphabetImages[letter.toLowerCase()])}>
+            <Image
+              source={alphabetImages[letter.toLowerCase()]}
+              style={styles.signImage}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
 
-      {/* Question 3: Sorry */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>C</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/c.png'))}>
-          <Image
-            source={require('../../assets/c.png')}
-            style={styles.signImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <Text style={styles.description}>This sign is used to apologize for a mistake.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('C')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
+          <Text style={styles.description}>
+            This sign is for the letter {letter}.
+          </Text>
 
-      {/* Question 4: Yes */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>D</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/d.png'))}>
-          <Image
-            source={require('../../assets/d.png')}
-            style={styles.signImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <Text style={styles.description}>This sign indicates an affirmative response.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('D')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity style={styles.decodeButton} onPress={() => speak(letter)}>
+            <Text style={styles.buttonText}>Speak</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
 
-      {/* Question 5: No */}
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>No</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/no.jpg'))}>
-          <Image
-            source={require('../../assets/no.jpg')}
-            style={styles.signImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <Text style={styles.description}>This sign is a common way to give a negative response.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('No')}>
-          <Text style={styles.buttonText}>Speak</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* The Modal for the Image Viewer */}
-      <Modal
-        visible={isViewerVisible}
-        transparent={true}
-        onRequestClose={() => setIsViewerVisible(false)}
-      >
+      {/* Fullscreen Image Viewer */}
+      <Modal visible={isViewerVisible} transparent={true}>
         <ImageViewer
           imageUrls={viewerImages}
-          onSwipeDown={() => setIsViewerVisible(false)}
-          enableSwipeDown
+          onCancel={() => setIsViewerVisible(false)}
+          enableSwipeDown={true}
         />
       </Modal>
-
     </ScrollView>
   );
 }
