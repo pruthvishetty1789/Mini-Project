@@ -28,11 +28,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+
+
     const bootstrapAsync = async () => {
       let token = null;
       try {
         await new Promise(resolve => setTimeout(resolve, 3000));
-        token = await AsyncStorage.getItem('userToken');
+        token = await AsyncStorage.getItem('token');
+        const phone = await AsyncStorage.getItem('myPhone');
+        setProfile(prev => ({ ...prev, phoneNo: phone }));
+        console.log(phone)
         setUserToken(token);
         if (token) {
           await fetchProfile(token); // Fetch profile on app start if token exists
@@ -44,12 +49,15 @@ export const AuthProvider = ({ children }) => {
       }
     };
     bootstrapAsync();
+
   }, []);
 
-  const login = async (token) => {
+  const login = async (token,phoneNo) => {
     try {
-      await AsyncStorage.setItem('userToken', token);
+      await AsyncStorage.setItem('token', token);
+      await AsyncStorage.setItem('myPhone', phoneNo);
       setUserToken(token);
+      setProfile(prev => ({ ...prev, phoneNo }));
       await fetchProfile(token); // Fetch profile on login
     } catch (e) {
       console.error('Failed to save token:', e);
@@ -58,7 +66,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('userToken');
+      await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('myPhone');
       setUserToken(null);
       setProfile(null); // Clear profile on logout
     } catch (e) {

@@ -28,18 +28,25 @@ export default function LoginScreen({ navigation }) {
     setIsLoading(true);
     try {
       const response = await axios.post(`${API_URL}/login`, { email, password });
-      const token = response.data.token;
-      console.log("Login Token:",token);
-      await login(token);
+      
+      // ✅ Capture both token AND phoneNo from the response data
+      const { token, phoneNo } = response.data; 
+
+      console.log("Login Token:", token);
+      console.log("User Phone:", phoneNo); // <-- Check this log for uniqueness!
+
+      // ✅ Pass BOTH token AND phoneNo to your global login function
+      await login(token, phoneNo); 
+
       Alert.alert('Success', 'Logged in successfully!');
+      // Assuming your login function navigates upon success
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
-      Alert.alert('Login Failed', errorMessage);
-      console.error(error);
+      // ... error handling ...
     } finally {
       setIsLoading(false);
     }
-  };
+};
+
 
   const handleRegister = () => {
     navigation.navigate('Register');

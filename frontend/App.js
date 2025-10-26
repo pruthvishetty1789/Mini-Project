@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AuthProvider, default as AuthContext } from "./src/context/AuthContext";
 import SocketManager from "./src/SocketManager";
-
+import VoiceCallScreen from "./src/screens/VoiceCallScreen"; // Example import
 // Import screens
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
 import LoginScreen from "./src/screens/LoginScreen"; 
@@ -35,7 +35,10 @@ function AppNav() {
           </>
         ) : (
           // Main app
-          <Stack.Screen name="MainApp" component={BottomTabNavigator} />
+          <>
+            <Stack.Screen name="MainApp" component={BottomTabNavigator} />
+            <Stack.Screen name="VoiceCallScreen" component={VoiceCallScreen} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

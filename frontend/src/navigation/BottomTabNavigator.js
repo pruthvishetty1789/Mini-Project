@@ -14,6 +14,7 @@ import SettingsScreen from "../screens/SettingsScreen";
 import PrivacyScreen from "../screens/PrivacyScreen";
 import EditProfileScreen from "../screens/EditProfileScreen";
 import SupportScreen from "../screens/SupportScreen";
+import VoiceCallScreen from "../screens/VoiceCallScreen";
 import Lesson1 from '../lessons/Lesson1';
 import Lesson2 from '../lessons/Lesson2';
 import Lesson3 from '../lessons/Lesson3';
@@ -23,7 +24,6 @@ import Lesson5 from '../lessons/Lesson5';
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
-
 
 // Create a stack navigator for the "Home" tab
 function HomeStackScreen() {
@@ -54,7 +54,7 @@ function ProfileStackScreen() {
       <ProfileStack.Screen name="Settings" component={SettingsScreen} />
     <ProfileStack.Screen name="Privacy" component={PrivacyScreen} />
        <ProfileStack.Screen name="EditProfile" component={EditProfileScreen} />
-     <ProfileStack.Screen name="Support" component={SupportScreen} />   
+     <ProfileStack.Screen name="Support" component={SupportScreen} />  
     </ProfileStack.Navigator>
   );
 }
@@ -83,6 +83,7 @@ export default function BottomTabNavigator() {
       <Tab.Screen name="Call" component={CallScreen} />
       <Tab.Screen name="Emergency" component={EmergencyScreen} />
       <Tab.Screen name="Profile" component={ProfileStackScreen} />
+     
     </Tab.Navigator>
     </>
   );
