@@ -1,16 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-
 
 const { width, height } = Dimensions.get("window");
 const center = width / 2;
 const radius = width * 0.35;
 
-export default function HomeScreen() {
-  const navigation = useNavigation();
+export default function HomeScreen({ navigation }) {
 
-  // Array of lesson objects with their page names
   const lessons = [
     { id: 1, title: "Lesson 1", screen: "Lesson1" },
     { id: 2, title: "Lesson 2", screen: "Lesson2" },
@@ -22,12 +18,10 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       
-      {/* Central character/logo */}
+      {/* Central circular logo */}
       <View style={styles.centerLogoContainer}>
-        <Image
-          source={require("../../assets/home.png")}
-          style={styles.logo}
-        />
+        <Text style={styles.appTitle}>Learning Sign Languages</Text>
+        
       </View>
 
       {/* Lesson buttons arranged in a circle */}
@@ -39,13 +33,11 @@ export default function HomeScreen() {
         return (
           <TouchableOpacity
             key={lesson.id}
-            style={[
-              styles.button,
-              {
-                left: center + x - styles.button.width / 2,
-                top: height / 2 + y - styles.button.height / 2,
-              },
-            ]}
+            style={[styles.button, {
+              left: center + x - 40, // half of button width
+              top: height / 2 + y - 40,
+            }]}
+            activeOpacity={0.8}
             onPress={() => navigation.navigate(lesson.screen)}
           >
             <Text style={styles.buttonText}>{lesson.title}</Text>
@@ -59,39 +51,45 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffffff",
     justifyContent: "center",
     alignItems: "center",
   },
   centerLogoContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: "-25%",
-    marginTop: "10%",
-    width: 120,
-    height: 120,
+    position: "absolute",
+    top: height * 0.05,
   },
+  
   logo: {
-    width: 120,
-    height: 120,
+    width: 100,
+    height: 100,
+  },
+  appTitle: {
+    marginTop: 5,
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#628ec8ff",
   },
   button: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: "#a5e1e6ff",
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#718be0ff",
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
     shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 2, height: 2 },
-    shadowRadius: 3,
-    elevation: 5,
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 2, height: 4 },
+    shadowRadius: 6,
+    elevation: 6,
   },
   buttonText: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: "700",
+    color: "#fff",
     textAlign: "center",
   },
 });

@@ -38,7 +38,7 @@ router.post('/sync-contacts', auth, async (req, res) => {
     const appUsers = await User.find({
       phoneNo: { $in: normalizedContacts },
     }).select('name phoneNo');
-    console.log("appUsers:", appUsers);
+   
 
     const appUserPhones = appUsers.map(user => user.phoneNo);
     console.log("appUserPhones:", appUserPhones);
@@ -46,7 +46,7 @@ router.post('/sync-contacts', auth, async (req, res) => {
     const nonAppUsers = normalizedContacts.filter(
       phoneNo => !appUserPhones.includes(phoneNo)
     );
-    console.log("nonAppUsers:", nonAppUsers);
+    
 
     res.json({
       friends: appUsers,        // Already registered in app
