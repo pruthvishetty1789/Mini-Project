@@ -1,7 +1,15 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from "react-native";
+import React, { useRef, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+  Animated,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get("window");
 const center = width / 2;
@@ -9,8 +17,26 @@ const radius = width * 0.35;
 
 export default function HomeScreen() {
   const navigation = useNavigation();
+  const logoAnim = useRef(new Animated.Value(0)).current;
 
-  // Array of lesson objects with their page names
+  // Float animation for logo
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(logoAnim, {
+          toValue: -10,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(logoAnim, {
+          toValue: 0,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [logoAnim]);
+
   const lessons = [
     { id: 1, title: "Lesson 1", screen: "Lesson1" },
     { id: 2, title: "Lesson 2", screen: "Lesson2" },
@@ -20,15 +46,21 @@ export default function HomeScreen() {
   ];
 
   return (
-    <View style={styles.container}>
-      
+    <LinearGradient colors={["#fdfbfb", "#ebedee"]} style={styles.container}>
       {/* Central character/logo */}
-      <View style={styles.centerLogoContainer}>
+      <Animated.View
+        style={[
+          styles.centerLogoContainer,
+          {
+            transform: [{ translateY: logoAnim }],
+          },
+        ]}
+      >
         <Image
           source={require("../../assets/home.png")}
           style={styles.logo}
         />
-      </View>
+      </Animated.View>
 
       {/* Lesson buttons arranged in a circle */}
       {lessons.map((lesson, index) => {
@@ -39,6 +71,7 @@ export default function HomeScreen() {
         return (
           <TouchableOpacity
             key={lesson.id}
+            activeOpacity={0.7}
             style={[
               styles.button,
               {
@@ -52,14 +85,13 @@ export default function HomeScreen() {
           </TouchableOpacity>
         );
       })}
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -68,30 +100,40 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: "-25%",
     marginTop: "10%",
-    width: 120,
-    height: 120,
+    width: 130,
+    height: 130,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 5,
+    elevation: 8,
+    backgroundColor: "#fff",
+    borderRadius: 65,
   },
   logo: {
     width: 120,
     height: 120,
   },
   button: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    width: 75,
+    height: 75,
+    borderRadius: 38,
     backgroundColor: "#a5e1e6ff",
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
     shadowColor: "#000",
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.25,
     shadowOffset: { width: 2, height: 2 },
-    shadowRadius: 3,
-    elevation: 5,
+    shadowRadius: 4,
+    elevation: 6,
+    borderWidth: 2,
+    borderColor: "#fff",
   },
   buttonText: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: 13,
+    fontWeight: "700",
     textAlign: "center",
+    color: "#333",
   },
 });

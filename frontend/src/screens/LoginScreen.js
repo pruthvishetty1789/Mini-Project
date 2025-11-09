@@ -10,14 +10,13 @@ import {
   Platform,
   Dimensions,
   Alert,
-  ActivityIndicator // <-- This line was missing
+  ActivityIndicator
 } from 'react-native';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
-
-const API_URL = 'http://10.151.99.231:5000/api'; 
+const API_URL = 'http://10.12.249.231:5000/api'; 
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -29,10 +28,11 @@ export default function LoginScreen({ navigation }) {
     setIsLoading(true);
     try {
       const response = await axios.post(`${API_URL}/login`, { email, password });
-      
-      await login(response.data.token); 
-      
-      Alert.alert('Success', 'Logged in successfully!');
+      const { token, phone } = response.data;
+
+      await login(token, phone); // Pass both token and phone
+      Alert.alert("Success", "Logged in successfully!");
+
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
       Alert.alert('Login Failed', errorMessage);

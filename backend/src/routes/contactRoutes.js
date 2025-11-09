@@ -1,7 +1,7 @@
 // routes/contactRoutes.js
 import express from 'express';
-import { User } from '../models/User.js';
-import { auth } from '../middleware/auth.js';
+import {User} from '../models/User.js'; // 
+import auth from '../middleware/auth.js'; // 
 import { parsePhoneNumberWithError } from 'libphonenumber-js';
 
 const router = express.Router();
@@ -13,12 +13,12 @@ const normalizePhone = (phoneNo) => {
     // Returns E.164 format like +919876543210
     return parsed.number;
   } catch (error) {
-    // Log the specific error for debugging
     console.error(`Invalid phone number: ${phoneNo}`, error);
     return null; // Skip invalid numbers
   }
 };
 
+// POST /sync-contacts
 router.post('/sync-contacts', auth, async (req, res) => {
   try {
     const { contacts } = req.body;
@@ -28,11 +28,8 @@ router.post('/sync-contacts', auth, async (req, res) => {
       return res.status(400).json({ message: 'Invalid contacts data provided.' });
     }
 
-    // Directly use the contacts array from the request body
-    const phoneNumbers = contacts;
-
     // Normalize and filter out invalid numbers
-    const normalizedContacts = phoneNumbers
+    const normalizedContacts = contacts
       .map(normalizePhone)
       .filter(Boolean);
     console.log("Normalized contacts:", normalizedContacts);
@@ -45,13 +42,13 @@ router.post('/sync-contacts', auth, async (req, res) => {
 
     const appUserPhones = appUsers.map(user => user.phoneNo);
 
-    // Filter out users who are already in the app
+    // Filter out users who are not registered
     const nonAppUsers = normalizedContacts.filter(
       phoneNo => !appUserPhones.includes(phoneNo)
     );
 
     res.json({
-      friends: appUsers, 
+      friends: appUsers,
       invitable: nonAppUsers,
     });
 

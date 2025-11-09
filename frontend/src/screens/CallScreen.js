@@ -1,21 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
-  View,
-  Text,
-  Button,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-  Linking
+  View, Text, Button, StyleSheet, FlatList,
+  TouchableOpacity, Alert, ActivityIndicator, Linking
 } from 'react-native';
 import * as Contacts from 'expo-contacts';
 import { parsePhoneNumberWithError } from 'libphonenumber-js';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ThemeContext } from '../context/ThemeContext'; // Import Theme Context
+import { lightTheme, darkTheme } from '../theme/colors'; // Theme colors
 
 const CallScreen = ({ navigation }) => {
+  const { theme } = useContext(ThemeContext); // Get current theme from context
+  const colors = theme === 'dark' ? darkTheme : lightTheme;
+
   const [loading, setLoading] = useState(false);
   const [permissionStatus, setPermissionStatus] = useState(null);
   const [friends, setFriends] = useState([]);
@@ -27,11 +25,8 @@ const CallScreen = ({ navigation }) => {
     (async () => {
       const { status } = await Contacts.requestPermissionsAsync();
       setPermissionStatus(status);
-
       const syncedValue = await AsyncStorage.getItem('hasSyncedContacts');
-      if (syncedValue === 'true') {
-        setHasSynced(true);
-      }
+      if (syncedValue === 'true') setHasSynced(true);
     })();
   }, []);
 
@@ -74,63 +69,44 @@ const CallScreen = ({ navigation }) => {
       setPhoneNameMap(phoneToName);
 
       const response = await axios.post(
-        "http://10.151.99.231:5000/api/contacts/sync-contacts",
+        "http://10.12.249.231:5000/api/contacts/sync-contacts",
         { contacts: normalizedContacts },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       const friendsData = response.data.friends;
-
-      // ✅ Prevent duplicates: remove numbers already in friends from the invitable list
       const friendNumbers = new Set(friendsData.map(f => f.phoneNo));
       const filteredInvitable = response.data.invitable.filter(
         phone => !friendNumbers.has(phone)
       );
 
       setFriends(friendsData);
-      setInvitable(
-        filteredInvitable.map(phone => ({
-          phoneNo: phone,
-          name: phoneToName[phone] || phone,
-        }))
-      );
+      setInvitable(filteredInvitable.map(phone => ({
+        phoneNo: phone,
+        name: phoneToName[phone] || phone,
+      })));
+
+      await AsyncStorage.setItem('hasSyncedContacts', 'true');
+      setHasSynced(true);
+
     } catch (error) {
       console.error('Error loading contacts:', error);
-      Alert.alert('Load Failed', 'Failed to load contacts from the server.');
+      Alert.alert('Load Failed', 'Failed to load contacts.');
     } finally {
       setLoading(false);
     }
   };
 
-  const sendInvite = (type, phoneNumber, message) => {
-    let url;
-    switch (type) {
-      case 'whatsapp':
-        url = `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
-        break;
-      case 'sms':
-        url = `sms:${phoneNumber}?body=${encodeURIComponent(message)}`;
-        break;
-      case 'instagram':
-        Alert.alert('Invite', 'Please open Instagram and share the link manually.');
-        return;
-      default:
-        return;
-    }
-    Linking.openURL(url).catch(err => {
-      console.error("Failed to open app:", err);
-      Alert.alert('Error', `Could not open the selected app for ${type}.`);
-    });
-  };
-
   const addToEmergency = async (contact) => {
     try {
       const jsonValue = await AsyncStorage.getItem('emergencyContacts');
-      const currentContacts = jsonValue != null ? JSON.parse(jsonValue) : [];
+      const currentContacts = jsonValue ? JSON.parse(jsonValue) : [];
+
       if (currentContacts.some(ec => ec.phoneNo === contact.phoneNo)) {
         Alert.alert("Already Added", `${contact.name} is already in your emergency contacts.`);
         return;
       }
+
       const updatedContacts = [...currentContacts, contact];
       await AsyncStorage.setItem('emergencyContacts', JSON.stringify(updatedContacts));
       Alert.alert("Success", `${contact.name} has been added to your emergency contacts.`);
@@ -140,45 +116,37 @@ const CallScreen = ({ navigation }) => {
     }
   };
 
-  const handleSyncContacts = async () => {
-    if (permissionStatus !== 'granted') {
-      Alert.alert('Permission Denied', 'Permission to access contacts was denied.');
-      return;
-    }
-    await loadSyncedContacts();
-    await AsyncStorage.setItem('hasSyncedContacts', 'true');
-    setHasSynced(true);
-  };
-
   const renderContact = ({ item, type }) => {
-    const inviteMessage = `Hey, check out this app! It's great for emergency calls and connecting with friends. Download it here: [YOUR_APP_DOWNLOAD_LINK]`;
+    const inviteMessage = `Hey, check out this app! It helps you connect with friends quickly.`;
     return (
-      <View style={styles.contactItem}>
-        <Text style={styles.contactName}>{item.name}</Text>
-        <Text style={styles.contactPhone}>{item.phoneNo}</Text>
+      <View style={[styles.contactItem, { backgroundColor: colors.card, borderColor: colors.divider }]}>
+        <View>
+          <Text style={[styles.contactName, { color: colors.text }]}>{item.name}</Text>
+          <Text style={[styles.contactPhone, { color: colors.versionText }]}>{item.phoneNo}</Text>
+        </View>
         <View style={styles.buttonGroup}>
           <TouchableOpacity
-            style={styles.actionButton}
+            style={[styles.actionButton, { backgroundColor: colors.primary }]}
             onPress={() => {
               if (type === "friend") {
-                Alert.alert("Call", `Calling ${item.name}...`);
+                navigation.navigate("VoiceCallScreen", { receiverPhone: item.phoneNo });
               } else {
-                Alert.alert('Invite Contact', `How would you like to invite ${item.name}?`, [
-                  { text: 'WhatsApp', onPress: () => sendInvite('whatsapp', item.phoneNo, inviteMessage) },
-                  { text: 'SMS', onPress: () => sendInvite('sms', item.phoneNo, inviteMessage) },
-                  { text: 'Instagram', onPress: () => sendInvite('instagram', item.phoneNo, inviteMessage) },
+                Alert.alert('Invite Contact', `Invite ${item.name}?`, [
+                  { text: 'WhatsApp', onPress: () => Linking.openURL(`whatsapp://send?phone=${item.phoneNo}&text=${inviteMessage}`) },
+                  { text: 'SMS', onPress: () => Linking.openURL(`sms:${item.phoneNo}?body=${inviteMessage}`) },
                   { text: 'Cancel', style: 'cancel' },
-                ], { cancelable: true });
+                ]);
               }
             }}
           >
             <Text style={styles.buttonText}>{type === "friend" ? "Call" : "Invite"}</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
-            style={[styles.actionButton, styles.emergencyButton]}
+            style={[styles.actionButton, styles.emergencyButton, { backgroundColor: colors.danger }]}
             onPress={() => addToEmergency(item)}
           >
-            <Text style={styles.buttonText}>Add to Emergency</Text>
+            <Text style={styles.buttonText}>Emergency</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -186,32 +154,36 @@ const CallScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Contact Sync</Text>
-      {!hasSynced && (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>Contact Sync</Text>
+
+      {!hasSynced ? (
         <>
-          <Text style={styles.statusText}>Permission Status: {permissionStatus}</Text>
+          <Text style={[styles.statusText, { color: colors.text }]}>Permission Status: {permissionStatus}</Text>
           <Button
             title={loading ? "Syncing..." : "Sync Contacts"}
-            onPress={handleSyncContacts}
+            onPress={loadSyncedContacts}
             disabled={loading || permissionStatus !== 'granted'}
+            color={colors.primary}
           />
         </>
-      )}
-      {loading && <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />}
-      {hasSynced && (
+      ) : (
         <>
-          <Text style={styles.syncedMessage}>Contacts are already synced.</Text>
+          <Text style={[styles.syncedMessage, { color: colors.primary }]}>Contacts are already synced.</Text>
           <Button
             title={loading ? "Loading..." : "Show Synced Contacts"}
             onPress={loadSyncedContacts}
             disabled={loading}
+            color={colors.primary}
           />
         </>
       )}
+
+      {loading && <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />}
+
       {friends.length > 0 && (
         <>
-          <Text style={styles.sectionTitle}>Friends on App</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text, borderBottomColor: colors.divider }]}>Friends on App</Text>
           <FlatList
             data={friends}
             keyExtractor={(item) => item.phoneNo}
@@ -219,9 +191,10 @@ const CallScreen = ({ navigation }) => {
           />
         </>
       )}
+
       {invitable.length > 0 && (
         <>
-          <Text style={styles.sectionTitle}>Invite Contacts</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text, borderBottomColor: colors.divider }]}>Invite Contacts</Text>
           <FlatList
             data={invitable}
             keyExtractor={(item) => item.phoneNo}
@@ -234,25 +207,76 @@ const CallScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  statusText: { marginBottom: 10, fontSize: 16, textAlign: 'center' },
-  syncedMessage: { fontSize: 16, textAlign: 'center', marginVertical: 20, color: 'green' },
-  sectionTitle: { fontSize: 20, fontWeight: '600', marginTop: 20, marginBottom: 10 },
-  contactItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc'
+  container: { 
+    flex: 1, 
+    paddingTop: 10, 
+    paddingHorizontal: 18, 
   },
-  contactName: { fontSize: 16, flex: 1 },
-  contactPhone: { fontSize: 12, color: '#666', marginRight: 10 },
-  buttonGroup: { flexDirection: 'row', alignItems: 'center' },
-  actionButton: { backgroundColor: '#007bff', padding: 8, borderRadius: 5, marginLeft: 5 },
-  emergencyButton: { backgroundColor: '#dc3545' },
-  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 12 },
+  title: { 
+    fontSize: 26, 
+    fontWeight: '800', 
+    marginTop: 25, 
+    marginBottom: 10, 
+    textAlign: 'center',
+    letterSpacing: 0.5,
+  },
+  syncedMessage: { 
+    fontSize: 16, 
+    textAlign: 'center', 
+    marginVertical: 15, 
+    fontWeight: '600',
+  },
+  
+  sectionTitle: { 
+    fontSize: 20, 
+    fontWeight: '800', 
+    marginTop: 30, 
+    marginBottom: 10,
+    paddingBottom: 5,
+    borderBottomWidth: 2,
+  },
+
+  contactItem: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between',
+    alignItems: 'center', 
+    paddingVertical: 14,
+    paddingHorizontal: 15,
+    borderRadius: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+  },
+  contactName: { 
+    fontSize: 17, 
+    fontWeight: '600',
+  },
+  contactPhone: { 
+    fontSize: 13, 
+    marginTop: 3,
+  },
+
+  buttonGroup: { 
+    flexDirection: 'row', 
+    alignItems: 'center',
+    marginLeft: 15,
+  },
+  actionButton: { 
+    paddingVertical: 8, 
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    marginHorizontal: 4,
+    minWidth: 70,
+    alignItems: 'center',
+  },
+  emergencyButton: {},
+  buttonText: { 
+    color: '#FFFFFF', 
+    fontWeight: '700', 
+    fontSize: 13,
+  },
+  
+  statusText: { marginBottom: 10, fontSize: 16, textAlign: 'center' },
+  loader: { marginVertical: 10 },
 });
 
 export default CallScreen;

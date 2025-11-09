@@ -74,13 +74,18 @@ export default function Lesson1() {
       ))}
 
       {/* Fullscreen Image Viewer */}
-      <Modal visible={isViewerVisible} transparent={true}>
-        <ImageViewer
-          imageUrls={viewerImages}
-          onCancel={() => setIsViewerVisible(false)}
-          enableSwipeDown={true}
-        />
-      </Modal>
+     <Modal
+  visible={isViewerVisible}
+  transparent={true}
+  onRequestClose={() => setIsViewerVisible(false)} // <-- This line fixes the back button
+>
+  <ImageViewer
+    imageUrls={viewerImages}
+    onCancel={() => setIsViewerVisible(false)}
+    enableSwipeDown={true}
+  />
+</Modal>
+
     </ScrollView>
   );
 }

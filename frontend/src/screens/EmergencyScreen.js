@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Linking, Act
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from '@react-navigation/native';
 import * as Location from 'expo-location';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const EmergencyScreen = () => {
   const [emergencyContacts, setEmergencyContacts] = useState([]);
@@ -34,7 +35,6 @@ const EmergencyScreen = () => {
         return;
       }
 
-      // 1. Request location permissions
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Permission Denied', 'Permission to access location was denied. Please enable it in your phone settings.');
@@ -42,55 +42,33 @@ const EmergencyScreen = () => {
         return;
       }
 
-      // 2. Get current location with a reduced timeout (3 seconds) for quick response
       let location;
       try {
-        location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High,
-          timeout: 3000, // Reduced to 3 seconds
-        });
-      } catch (locationError) {
-        console.error('Location fetch failed:', locationError);
-        Alert.alert(
-          'Location Not Found',
-          'Failed to get your current location. Please check your GPS signal and settings.'
-        );
+        location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High, timeout: 3000 });
+      } catch {
+        Alert.alert('Location Not Found', 'Failed to get your current location. Check GPS signal.');
         setIsSending(false);
         return;
       }
       
       const { latitude, longitude } = location.coords;
-      
-      // Use the standard, functional Google Maps query format.
       const locationLink = `https://maps.google.com/?q=${latitude},${longitude}`;
-
-      // 4. Prepare the message
       const message = `🚨 I am in a difficult situation and need help. My last known location is here: ${locationLink}`;
-
-      // 5. Get all phone numbers and join them into a single string
       const phoneNumbers = emergencyContacts.map(contact => contact.phoneNo).join(',');
-
-      // 6. Create a single SMS link and open it
-      // This uses a comma-separated list of numbers for multi-recipient SMS
       const url = `sms:${phoneNumbers}?body=${encodeURIComponent(message)}`;
       await Linking.openURL(url);
-
-      Alert.alert('SMS App Opened', 'An emergency message has been prepared for your contacts. Please press "Send" to complete.');
+      Alert.alert('SMS App Opened', 'An emergency message has been prepared. Press "Send" to complete.');
 
     } catch (error) {
-      console.error('SOS failed:', error);
-      Alert.alert('Error', 'Failed to send SOS. Please check your network and permissions.');
+      Alert.alert('Error', 'Failed to send SOS.');
+      console.error(error);
     } finally {
       setIsSending(false);
     }
   };
 
   const handleCallEmergency = (phoneNumber) => {
-    const url = `tel:${phoneNumber}`;
-    Linking.openURL(url).catch(err => {
-      console.error("Failed to make a call:", err);
-      Alert.alert("Error", "Could not initiate call.");
-    });
+    Linking.openURL(`tel:${phoneNumber}`).catch(() => Alert.alert("Error", "Could not initiate call."));
   };
 
   const handleRemoveEmergency = async (contactToRemove) => {
@@ -109,8 +87,7 @@ const EmergencyScreen = () => {
             try {
               await AsyncStorage.setItem('emergencyContacts', JSON.stringify(updatedContacts));
               Alert.alert("Removed", `${contactToRemove.name} has been removed.`);
-            } catch (e) {
-              console.error("Failed to remove contact:", e);
+            } catch {
               Alert.alert("Error", "Could not remove contact.");
             }
           },
@@ -127,16 +104,16 @@ const EmergencyScreen = () => {
       </View>
       <View style={styles.buttonGroup}>
         <TouchableOpacity
-          style={styles.callButton}
+          style={[styles.iconButton, { backgroundColor: '#28a745' }]}
           onPress={() => handleCallEmergency(item.phoneNo)}
         >
-          <Text style={styles.buttonText}>Call</Text>
+          <MaterialIcons name="call" size={24} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.removeButton}
+          style={[styles.iconButton, { backgroundColor: '#dc3545' }]}
           onPress={() => handleRemoveEmergency(item)}
         >
-          <Text style={styles.buttonText}>Remove</Text>
+          <MaterialIcons name="delete" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
     </View>
@@ -163,6 +140,7 @@ const EmergencyScreen = () => {
           data={emergencyContacts}
           keyExtractor={(item) => item.phoneNo}
           renderItem={renderContact}
+          contentContainerStyle={{ paddingBottom: 50 }}
         />
       ) : (
         <Text style={styles.emptyMessage}>No emergency contacts added yet.</Text>
@@ -175,73 +153,77 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff', // Or use your theme colors
+    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333', // Or use your theme colors
+    color: '#333',
   },
   sosButton: {
     backgroundColor: '#dc3545',
-    padding: 20,
-    borderRadius: 50,
+    width: 160,
+    height: 160,
+    borderRadius: 100,
     alignSelf: 'center',
-    marginVertical: 20,
-    width: 150,
-    height: 150,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
+    marginBottom: 25,
+    shadowColor: '#dc3545',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 6,
   },
   sosButtonText: {
     color: '#fff',
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
+    letterSpacing: 2,
   },
   emptyMessage: {
     textAlign: 'center',
-    marginTop: 50,
+    marginTop: 60,
     fontSize: 16,
-    color: '#666',
+    color: '#777',
   },
   contactItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    padding: 18,
+    marginVertical: 8,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 15,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 6,
   },
   contactName: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333', // Or use your theme colors
+    fontWeight: '600',
+    color: '#333',
   },
   contactPhone: {
     fontSize: 14,
-    color: '#666',
+    color: '#555',
+    marginTop: 4,
   },
   buttonGroup: {
     flexDirection: 'row',
+  },
+  iconButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  callButton: {
-    backgroundColor: '#dc3545',
-    padding: 10,
-    borderRadius: 5,
-    marginRight: 10,
-  },
-  removeButton: {
-    backgroundColor: '#6c757d',
-    padding: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    marginLeft: 12,
+    elevation: 4,
   },
 });
 

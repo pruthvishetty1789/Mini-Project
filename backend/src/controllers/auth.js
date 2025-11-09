@@ -36,26 +36,35 @@ exports.registerUser = async (req, res) => {
 };
 
 // Handle user login
+// Handle user login
 exports.loginUser = async (req, res) => {
-  const { email, password } = req.body;
-  
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials.' });
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials.' });
-    }
+  const { email, password } = req.body;
+  
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials.' });
+    }
 
-    const payload = { userId: user._id };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials.' });
+    }
 
-    res.json({ token, message: 'Logged in successfully!' });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error.', error: error.message });
-  }
+    const payload = { userId: user._id };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // ✅ Return phone in response
+    res.json({
+      token,
+      message: 'Logged in successfully!',
+      phone: user.phone, // <--- Add this
+      name: user.name,   // Optional
+      email: user.email  // Optional
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error.', error: error.message });
+  }
 };
 
 // Get user profile (requires authentication)

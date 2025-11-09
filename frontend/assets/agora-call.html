@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Agora Voice Call</title>
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+    <style>
+      body {
+        background: #111;
+        color: white;
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      button {
+        padding: 12px 20px;
+        background: #ff4d4d;
+        border: none;
+        color: white;
+        border-radius: 6px;
+        font-weight: bold;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Connecting to Agora...</h2>
+    <p id="status">Initializing...</p>
+    <button id="leaveBtn" style="display:none;">Leave Call</button>
+
+    <script>
+      const APP_ID = window.AGORA_APP_ID;
+      const TOKEN = window.AGORA_TOKEN;
+      const CHANNEL = window.CHANNEL_NAME;
+
+      const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
+      async function start() {
+        try {
+          document.getElementById("status").innerText = "Joining channel...";
+          await client.join(APP_ID, CHANNEL, TOKEN, null);
+
+          const localTrack = await AgoraRTC.createMicrophoneAudioTrack();
+          await client.publish([localTrack]);
+          document.getElementById("status").innerText = "Call connected ✅";
+
+          client.on("user-published", async (user, mediaType) => {
+            await client.subscribe(user, mediaType);
+            if (mediaType === "audio") {
+              const remoteAudioTrack = user.audioTrack;
+              remoteAudioTrack.play();
+              document.getElementById("status").innerText = "Connected with user 🎧";
+            }
+          });
+
+          client.on("user-left", () => {
+            document.getElementById("status").innerText = "User left the call.";
+          });
+
+          document.getElementById("leaveBtn").style.display = "block";
+          document.getElementById("leaveBtn").onclick = async () => {
+            localTrack.stop();
+            localTrack.close();
+            await client.leave();
+            document.getElementById("status").innerText = "Call ended ❌";
+          };
+        } catch (e) {
+          document.getElementById("status").innerText = "Error joining call.";
+          console.error(e);
+        }
+      }
+
+      start();
+    </script>
+  </body>
+</html>

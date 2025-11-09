@@ -1,4 +1,4 @@
-package com.frontend
+package com.pruthvi_17.frontend
 
 import android.app.Application
 import android.content.res.Configuration
