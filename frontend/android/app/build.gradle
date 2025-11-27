@@ -57,23 +57,22 @@ android {
         jniLibs {
             useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
         }
+        resources {
+            excludes += [
+                'META-INF/LICENSE*',
+                'META-INF/NOTICE*'
+            ]
+        }
     }
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!**~'
     }
 }
 
-["pickFirsts", "excludes", "merges", "doNotStrip"].each { prop ->
-    def options = (findProperty("android.packagingOptions.$prop") ?: "").split(",");
-    for (i in 0..<options.size()) options[i] = options[i].trim();
-    options -= ""
-
-    if (options.length > 0) {
-        println "android.packagingOptions.$prop += $options ($options.length)"
-        options.each {
-            android.packagingOptions[prop] += it
-        }
-    }
+// ✅ Exclude old Android support libs to avoid duplicate classes
+configurations.all {
+    exclude group: 'com.android.support'
+    exclude group: 'com.google.android', module: 'android'
 }
 
 dependencies {
@@ -100,6 +99,6 @@ dependencies {
         implementation jscFlavor
     }
 
-    // ✅ Agora SDK dependency added here:
+    // ✅ Agora SDK
     implementation 'io.agora.rtc:full-sdk:4.1.1'
 }

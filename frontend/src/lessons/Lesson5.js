@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal } fr
 import * as Speech from 'expo-speech';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
-export default function Lesson5() {
+export default function Lesson5({ navigation }) {
   const [isViewerVisible, setIsViewerVisible] = useState(false);
   const [viewerImages, setViewerImages] = useState([]);
 
@@ -36,7 +36,10 @@ export default function Lesson5() {
           />
         </View>
         <Text style={styles.description}>This phrase is used to ask someone's name.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('What is your name?')}>
+        <TouchableOpacity
+          style={styles.decodeButton}
+          onPress={() => speak('What is your name?')}
+        >
           <Text style={styles.buttonText}>Speak Phrase</Text>
         </TouchableOpacity>
       </View>
@@ -44,7 +47,9 @@ export default function Lesson5() {
       {/* Second phrase */}
       <View style={styles.questionContainer}>
         <Text style={styles.questionText}>My name is ...</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/myname.png'))}>
+        <TouchableOpacity
+          onPress={() => handleImagePress(require('../../assets/myname.png'))}
+        >
           <Image
             source={require('../../assets/myname.png')}
             style={styles.signImage}
@@ -52,7 +57,10 @@ export default function Lesson5() {
           />
         </TouchableOpacity>
         <Text style={styles.description}>This phrase is used to introduce oneself.</Text>
-        <TouchableOpacity style={styles.decodeButton} onPress={() => speak('My name is ... and tell your name')}>
+        <TouchableOpacity
+          style={styles.decodeButton}
+          onPress={() => speak('My name is ... and tell your name')}
+        >
           <Text style={styles.buttonText}>Speak Phrase</Text>
         </TouchableOpacity>
       </View>
@@ -60,7 +68,9 @@ export default function Lesson5() {
       {/* Third phrase */}
       <View style={styles.questionContainer}>
         <Text style={styles.questionText}>How are you?</Text>
-        <TouchableOpacity onPress={() => handleImagePress(require('../../assets/howru.jpeg'))}>
+        <TouchableOpacity
+          onPress={() => handleImagePress(require('../../assets/howru.jpeg'))}
+        >
           <Image
             source={require('../../assets/howru.jpeg')}
             style={styles.signImage}
@@ -72,6 +82,14 @@ export default function Lesson5() {
           <Text style={styles.buttonText}>Speak Phrase</Text>
         </TouchableOpacity>
       </View>
+
+      {/* 🔥 START QUIZ BUTTON */}
+      <TouchableOpacity
+        style={styles.quizButton}
+        onPress={() => navigation.navigate('Lesson5Quiz')}
+      >
+        <Text style={styles.quizText}>Start Lesson 5 Quiz 🚀</Text>
+      </TouchableOpacity>
 
       {/* Image Viewer Modal */}
       <Modal
@@ -151,5 +169,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+
+  // 🚀 QUIZ BUTTON STYLING
+  quizButton: {
+    marginTop: 10,
+    marginBottom: 40,
+    backgroundColor: '#6c5ce7',
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    borderRadius: 30,
+  },
+  quizText: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

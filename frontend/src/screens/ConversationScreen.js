@@ -36,6 +36,21 @@ const EMOJIS = [
   { id: '13', emoji: '❤', label: "I love you" },
   { id: '14', emoji: '🏠', label: "I'm heading home now" },
   { id: '15', emoji: '💤', label: "I'm about to fall asleep" },
+   { id: '16', emoji: '😇', label: "I'm feeling calm and peaceful" },
+  { id: '17', emoji: '🤒', label: "I'm not feeling well today" },
+  { id: '18', emoji: '🤕', label: "Something hurts, I'm in pain" },
+  { id: '19', emoji: '🤗', label: "I want to give you a hug" },
+  { id: '20', emoji: '😌', label: "I feel relaxed now" },
+  { id: '21', emoji: '😐', label: "I'm okay, nothing special" },
+  { id: '22', emoji: '🥺', label: "Please, I really need this" },
+  { id: '23', emoji: '😎', label: "I'm feeling confident and cool" },
+  { id: '24', emoji: '😳', label: "I'm feeling a bit shy or embarrassed" },
+  { id: '25', emoji: '🥱', label: "I'm bored and tired" },
+  { id: '26', emoji: '🍔', label: "I'm hungry and want a burger" },
+  { id: '27', emoji: '🚗', label: "I'm on the way somewhere" },
+  { id: '28', emoji: '📚', label: "I'm studying or doing homework" },
+  { id: '29', emoji: '💻', label: "I'm busy working on something" },
+  { id: '30', emoji: '📞', label: "Please call me when you can" },
 
 ];
 

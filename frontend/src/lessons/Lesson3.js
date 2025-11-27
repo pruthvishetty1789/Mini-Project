@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal } fr
 import * as Speech from 'expo-speech';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
-export default function Lesson3() {
+export default function Lesson3({ navigation }) {
   const [isViewerVisible, setIsViewerVisible] = useState(false);
   const [viewerImages, setViewerImages] = useState([]);
 
@@ -17,84 +17,95 @@ export default function Lesson3() {
   };
 
   const signs = [
-  {
-    label: 'Father',
-    image: require('../../assets/father.jpg'),
-    zoomImage: require('../../assets/father.jpg'),
-    description: 'This sign represents a father or dad',
-    speech: 'Father',
-  },
-  {
-    label: 'Mother',
-    image: require('../../assets/mother.jpg'),
-    zoomImage: require('../../assets/mother.jpg'),
-    description: 'This sign represents a mother or mom',
-    speech: 'Mother',
-  },
-  {
-    label: 'Brother',   
-    image: require('../../assets/brother.jpg'),
-    zoomImage: require('../../assets/brother.jpg'),
-    description: 'This sign represents a brother or male sibling',
-    speech: 'Brother',
-  },
-  {
-    label: 'Sister', 
-    image: require('../../assets/sister.jpg'),
-    zoomImage: require('../../assets/sister.jpg'),
-    description: 'This sign represents a sister or female sibling',
-    speech: 'Sister',
-  },
-{
-  label:'Grandfather',
-  image: require('../../assets/grandpa.jpg'),
-  zoomImage: require('../../assets/grandpa.jpg'),
-  description: 'This sign represents a grandfather',
-  speech: 'Grandfather',
-},
-{  label:'Grandmother',
-  image: require('../../assets/grandma.jpg'),
-  zoomImage: require('../../assets/grandma.jpg'),
-  description: 'This sign represents a grandmother',
-  speech: 'Grandmother',
-}
-,{
-  label:'Uncle',
-  image: require('../../assets/uncle.jpg'),
-  zoomImage: require('../../assets/uncle.jpg'),
-  description: 'This sign represents an uncle', 
-  speech: 'Uncle',    
-},{
-  label:'Aunt',
-  image: require('../../assets/aunt.jpg'),
-  zoomImage: require('../../assets/aunt.jpg'),
-  description: 'This sign represents an aunt',
-  speech: 'Aunt',
-}
-]
-
+    {
+      label: 'Father',
+      image: require('../../assets/father.jpg'),
+      zoomImage: require('../../assets/father.jpg'),
+      description: 'This sign represents a father or dad',
+      speech: 'Father',
+    },
+    {
+      label: 'Mother',
+      image: require('../../assets/mother.jpg'),
+      zoomImage: require('../../assets/mother.jpg'),
+      description: 'This sign represents a mother or mom',
+      speech: 'Mother',
+    },
+    {
+      label: 'Brother',   
+      image: require('../../assets/brother.jpg'),
+      zoomImage: require('../../assets/brother.jpg'),
+      description: 'This sign represents a brother or male sibling',
+      speech: 'Brother',
+    },
+    {
+      label: 'Sister', 
+      image: require('../../assets/sister.jpg'),
+      zoomImage: require('../../assets/sister.jpg'),
+      description: 'This sign represents a sister or female sibling',
+      speech: 'Sister',
+    },
+    {
+      label:'Grandfather',
+      image: require('../../assets/grandpa.jpg'),
+      zoomImage: require('../../assets/grandpa.jpg'),
+      description: 'This sign represents a grandfather',
+      speech: 'Grandfather',
+    },
+    {  
+      label:'Grandmother',
+      image: require('../../assets/grandma.jpg'),
+      zoomImage: require('../../assets/grandma.jpg'),
+      description: 'This sign represents a grandmother',
+      speech: 'Grandmother',
+    },
+    {
+      label:'Uncle',
+      image: require('../../assets/uncle.jpg'),
+      zoomImage: require('../../assets/uncle.jpg'),
+      description: 'This sign represents an uncle', 
+      speech: 'Uncle',    
+    },
+    {
+      label:'Aunt',
+      image: require('../../assets/aunt.jpg'),
+      zoomImage: require('../../assets/aunt.jpg'),
+      description: 'This sign represents an aunt',
+      speech: 'Aunt',
+    }
+  ]
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.lessonTitle}>Lesson 3: Family</Text>
-{signs.map((sign, index) => (
-  <View key={index} style={styles.questionContainer}>
-    <Text style={styles.questionText}>{sign.label}</Text>
-    <TouchableOpacity onPress={() => handleImagePress(sign.zoomImage)}>
-      <Image
-        source={sign.image}
-        style={styles.signImage}
-        resizeMode="contain"
-      />
-    </TouchableOpacity>
-    <Text style={styles.description}>{sign.description}</Text>
-    <TouchableOpacity style={styles.decodeButton} onPress={() => speak(sign.speech)}>
-      <Text style={styles.buttonText}>Speak</Text>
-    </TouchableOpacity>
-  </View>
-))}
 
-      {/* The Modal for the Image Viewer */}
+      {signs.map((sign, index) => (
+        <View key={index} style={styles.questionContainer}>
+          <Text style={styles.questionText}>{sign.label}</Text>
+          <TouchableOpacity onPress={() => handleImagePress(sign.zoomImage)}>
+            <Image
+              source={sign.image}
+              style={styles.signImage}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+          <Text style={styles.description}>{sign.description}</Text>
+          <TouchableOpacity style={styles.decodeButton} onPress={() => speak(sign.speech)}>
+            <Text style={styles.buttonText}>Speak</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+
+      {/* ---------------- NEW BUTTON HERE ---------------- */}
+      <TouchableOpacity
+        style={styles.quizButton}
+        onPress={() => navigation.navigate("Lesson3Quiz")}
+      >
+        <Text style={styles.quizButtonText}>Start Family Quiz</Text>
+      </TouchableOpacity>
+      {/* -------------------------------------------------- */}
+
+      {/* Image Viewer Modal */}
       <Modal
         visible={isViewerVisible}
         transparent={true}
@@ -136,11 +147,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  imageRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
   questionText: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -171,5 +177,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+
+  // 🔹 Quiz button styling
+  quizButton: {
+    marginTop: 10,
+    marginBottom: 40,
+    backgroundColor: '#6c5ce7',
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    borderRadius: 30,
+  },
+  quizButtonText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#fff',
+    textAlign: 'center',
   },
 });
