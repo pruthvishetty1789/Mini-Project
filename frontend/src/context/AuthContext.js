@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('Sending token:', token);
 
-      const response = await axios.get('http://192.168.43.220:5000/api/profile', {
+      const response = await axios.get('http://192.168.43.118:5000/api/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

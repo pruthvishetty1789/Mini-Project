@@ -13,43 +13,53 @@ import {
   ActivityIndicator
 } from 'react-native';
 import axios from 'axios';
-import AuthContext from '../context/AuthContext'; // Make sure this path is correct
+import AuthContext from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
-const API_URL = 'http://192.168.43.220:5000/api';
+const API_URL = 'http://192.168.43.118:5000/api';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useContext(AuthContext); // <-- Add this line
+  const { login } = useContext(AuthContext);
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Validation', 'Please enter both email and password.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await axios.post(`${API_URL}/login`, { email, password });
-      
-      // ✅ Capture both token AND phoneNo from the response data
-      const { token, phoneNo } = response.data; 
+      const token = response.data?.token;
+      // server might return phone or phoneNo; handle both
+      const phone = response.data?.phone || response.data?.phoneNo || null;
 
-      console.log("Login Token:", token);
-      console.log("User Phone:", phoneNo); // <-- Check this log for uniqueness!
+      if (!token) {
+        Alert.alert('Login Failed', 'No token returned from server.');
+        setIsLoading(false);
+        return;
+      }
 
-      // ✅ Pass BOTH token AND phoneNo to your global login function
-      await login(token, phoneNo); 
-
+      await login(token, phone); // Pass both token and phone (phone can be null)
       Alert.alert('Success', 'Logged in successfully!');
-      // Assuming your login function navigates upon success
     } catch (error) {
-      // ... error handling ...
+      const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
+      Alert.alert('Login Failed', errorMessage);
+      console.error('Login error:', error);
     } finally {
       setIsLoading(false);
     }
-};
-
+  };
 
   const handleRegister = () => {
     navigation.navigate('Register');
+  };
+
+  const handleForgotPassword = () => {
+    navigation.navigate('ForgotPasswordScreen'); 
   };
 
   return (
@@ -59,7 +69,7 @@ export default function LoginScreen({ navigation }) {
     >
       <View style={styles.logoContainer}>
         <Image
-          source={require('../../assets/logo.png')}
+          source={require('../../assets/hearme.jpg')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -86,6 +96,11 @@ export default function LoginScreen({ navigation }) {
           onChangeText={setPassword}
           secureTextEntry
         />
+
+        {/* Forgot password link */}
+        <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotContainer}>
+          <Text style={styles.forgotText}>Forgot password?</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={isLoading}>
           {isLoading ? (
@@ -152,6 +167,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
+  },
+  forgotContainer: {
+    width: '100%',
+    alignItems: 'flex-end',
+    marginBottom: 12,
+  },
+  forgotText: {
+    color: '#4a90e2',
+    fontWeight: '600',
   },
   loginButton: {
     width: '100%',

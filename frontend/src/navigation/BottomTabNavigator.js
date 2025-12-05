@@ -33,7 +33,8 @@ function HomeStackScreen() {
         name="HomeScreen" 
         component={HomeScreen} 
         options={{ 
-          header: () => <Header />, // <-- This line connects your custom header
+         // header: () => <Header />, // <-- This line connects your custom header
+         headerShown: false,
         }} 
       />
       <HomeStack.Screen name="Lesson1" component={Lesson1} />

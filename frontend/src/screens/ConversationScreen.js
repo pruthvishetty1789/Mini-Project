@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect, useRef } from 'react';
 import {
   SafeAreaView,
@@ -37,6 +36,22 @@ const EMOJIS = [
   { id: '13', emoji: '❤', label: "I love you" },
   { id: '14', emoji: '🏠', label: "I'm heading home now" },
   { id: '15', emoji: '💤', label: "I'm about to fall asleep" },
+   { id: '16', emoji: '😇', label: "I'm feeling calm and peaceful" },
+  { id: '17', emoji: '🤒', label: "I'm not feeling well today" },
+  { id: '18', emoji: '🤕', label: "Something hurts, I'm in pain" },
+  { id: '19', emoji: '🤗', label: "I want to give you a hug" },
+  { id: '20', emoji: '😌', label: "I feel relaxed now" },
+  { id: '21', emoji: '😐', label: "I'm okay, nothing special" },
+  { id: '22', emoji: '🥺', label: "Please, I really need this" },
+  { id: '23', emoji: '😎', label: "I'm feeling confident and cool" },
+  { id: '24', emoji: '😳', label: "I'm feeling a bit shy or embarrassed" },
+  { id: '25', emoji: '🥱', label: "I'm bored and tired" },
+  { id: '26', emoji: '🍔', label: "I'm hungry and want a burger" },
+  { id: '27', emoji: '🚗', label: "I'm on the way somewhere" },
+  { id: '28', emoji: '📚', label: "I'm studying or doing homework" },
+  { id: '29', emoji: '💻', label: "I'm busy working on something" },
+  { id: '30', emoji: '📞', label: "Please call me when you can" },
+
 ];
 
 // ---------------------- Main App ----------------------
@@ -197,7 +212,7 @@ function ConversationScreen() {
   };
 
   const sendAudioForTranscription = async (uri) => {
-    const apiKey = 'YOUR_API_KEY_HERE';
+    const apiKey = 'AIzaSyDPFeMhI9BxfGOnxVfUas8Z_L5AhfnUiVg';
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
     try {
       const base64Audio = await FileSystem.readAsStringAsync(uri, {
@@ -287,105 +302,257 @@ function ConversationScreen() {
 }
 
 // ---------------------- Styles ----------------------
+// ---------------------- Styles ----------------------
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  // --- GLOBAL / CONTAINER STYLES ---
+  container: { 
+    flex: 1, 
+    backgroundColor: '#F0F4F8', // Soft light background
+  },
+  
+  // --- TAB BAR STYLES ---
   tabRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 12,
-    backgroundColor: '#f1f3f5',
+    paddingVertical: 15,
+    paddingTop: 25, 
+    backgroundColor: '#FFFFFF', // White bar
+    borderBottomWidth: 0, // Removed sharp border
+    // Added prominent shadow for separation
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 8,
+    zIndex: 10,
   },
   tabButton: {
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 18,
-    borderRadius: 20,
+    borderRadius: 30, // Fully rounded pill shape
   },
-  tabActive: { backgroundColor: '#007bff' },
-  tabText: { fontSize: 16, color: '#555' },
-  tabTextActive: { color: '#fff', fontWeight: '700' },
+  tabActive: { 
+    backgroundColor: '#00796B', // Primary Deep Blue-Green
+    shadowColor: '#00796B',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+  tabText: { 
+    fontSize: 15, 
+    color: '#546E7A', 
+    fontWeight: '500',
+  },
+  tabTextActive: { 
+    color: '#FFFFFF', 
+    fontWeight: '700',
+  },
 
-  heading: { fontSize: 22, fontWeight: '700', textAlign: 'center', marginBottom: 16 },
-  previewContainer: { alignItems: 'center', marginBottom: 18 },
+  // --- EMOJI BUILDER STYLES ---
+  heading: { 
+    fontSize: 24, 
+    fontWeight: '800', 
+    textAlign: 'center', 
+    marginBottom: 20, 
+    color: '#37474F', // Dark text
+  },
+  previewContainer: { 
+    alignItems: 'center', 
+    marginBottom: 25,
+  },
   bigEmojiWrap: {
-    width: 140,
-    height: 140,
-    borderRadius: 16,
+    width: 160,
+    height: 160,
+    borderRadius: 35, // Large, soft corner radius
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f7',
+    backgroundColor: '#FFFFFF',
+    // Stronger, softer shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  bigEmoji: { fontSize: 72 },
-  previewLabel: { marginTop: 10, fontSize: 16, color: '#444' },
-  sentenceContainer: { alignItems: 'center', marginVertical: 20 },
-  sentenceText: { fontSize: 28, textAlign: 'center', marginBottom: 12 },
-  buttonRow: { flexDirection: 'row', gap: 10 },
+  bigEmoji: { 
+    fontSize: 80,
+  },
+  previewLabel: { 
+    marginTop: 15, 
+    fontSize: 15, 
+    color: '#546E7A', 
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
+  sentenceContainer: { 
+    alignItems: 'center', 
+    marginVertical: 20, 
+    backgroundColor: '#FFFFFF', 
+    padding: 20, 
+    borderRadius: 18, // Rounded container
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    // Slight inner shadow for depth
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  sentenceText: { 
+    fontSize: 32, 
+    textAlign: 'center', 
+    marginBottom: 16, 
+    fontWeight: '500', 
+  },
+  buttonRow: { 
+    flexDirection: 'row', 
+    gap: 15,
+  },
   speakButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: '#4CAF50', // Success Green
+    paddingVertical: 12,
+    paddingHorizontal: 25,
     borderRadius: 10,
+    // Accent shadow
+    shadowColor: '#4CAF50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 5,
   },
   clearButton: {
-    backgroundColor: '#F44336',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: '#FF5722', // Action Orange/Red
+    paddingVertical: 12,
+    paddingHorizontal: 25,
     borderRadius: 10,
+    // Accent shadow
+    shadowColor: '#FF5722',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 5,
   },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  row: { justifyContent: 'space-between', marginBottom: 12, paddingHorizontal: 6 },
+  buttonText: { 
+    color: '#FFFFFF', 
+    fontSize: 16, 
+    fontWeight: '700', 
+    letterSpacing: 0.5,
+  },
+  row: { 
+    justifyContent: 'space-around', 
+    marginBottom: 12, 
+    paddingHorizontal: 0, 
+  },
   emojiButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 12,
+    width: 60,
+    height: 60,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#f0f0f0',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 0, // Removed thin border
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    marginHorizontal: 5, // Added margin for spacing
   },
-  emojiText: { fontSize: 28 },
+  emojiText: { 
+    fontSize: 30,
+  },
 
-  // Conversation Styles
-  voiceContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', marginVertical: 10 },
+  // --- CONVERSATION SCREEN STYLES ---
+  voiceContainer: { 
+    flex: 1, 
+    alignItems: 'center', 
+    padding: 25,
+    justifyContent: 'flex-start', // Start from the top
+    paddingTop: 30, 
+  },
+  sectionTitle: { 
+    fontSize: 22, 
+    fontWeight: '700', 
+    marginVertical: 15, 
+    color: '#37474F',
+    alignSelf: 'flex-start',
+    paddingLeft: 5,
+  },
   micButton: {
-    backgroundColor: '#007bff',
-    borderRadius: 60,
-    width: 120,
-    height: 120,
+    backgroundColor: '#00796B', // Primary Color
+    borderRadius: 80,
+    width: 160,
+    height: 160,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#00796B',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
+    marginTop: 10,
+    marginBottom: 20,
   },
-  micButtonRecording: { backgroundColor: '#dc3545' },
-  statusText: { marginTop: 20, fontSize: 18, color: '#6c757d', fontWeight: 'bold' },
+  micButtonRecording: { 
+    backgroundColor: '#FF5722', // Alert/Recording State
+    shadowColor: '#FF5722',
+  },
+  statusText: { 
+    marginTop: 10, 
+    fontSize: 16, 
+    color: '#546E7A', 
+    fontWeight: '600',
+  },
   textBox: {
-    width: '90%',
+    width: '100%',
     minHeight: 100,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FFFFFF',
     borderRadius: 15,
-    padding: 20,
+    padding: 18,
     borderWidth: 1,
-    borderColor: '#e9ecef',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: '#E0E0E0',
+    marginTop: 15,
+    // Soft, deep shadow for main content
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 4,
   },
-  text: { fontSize: 18, textAlign: 'center', color: '#343a40' },
-  separator: { width: '90%', height: 1, backgroundColor: '#e9ecef', marginVertical: 20 },
+  text: { 
+    fontSize: 17, 
+    textAlign: 'left', 
+    color: '#212529',
+  },
+  separator: { 
+    width: '100%', 
+    height: 1, 
+    backgroundColor: '#CFD8DC', 
+    marginVertical: 25,
+  },
   inputContainer: {
-    width: '90%',
+    width: '100%',
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+    alignItems: 'flex-start', // Align items at the top
+    backgroundColor: '#FFFFFF',
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: '#e9ecef',
-    padding: 10,
+    borderColor: '#E0E0E0',
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   textInput: {
     flex: 1,
     minHeight: 80,
-    fontSize: 18,
-    color: '#343a40',
+    fontSize: 17,
+    color: '#212529',
     paddingRight: 10,
     textAlignVertical: 'top',
   },

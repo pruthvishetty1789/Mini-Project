@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import * as Speech from 'expo-speech';
 import ImageViewer from 'react-native-image-zoom-viewer';
-
+import { useNavigation } from '@react-navigation/native';
+import MatchTheFollowing from './MatchTheFollowing';
 // ✅ Create a mapping of alphabets to their images
 const alphabetImages = {
   a: require('../../assets/a.jpg'),
@@ -37,6 +38,7 @@ export default function Lesson1() {
   const alphabets = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
   const [isViewerVisible, setIsViewerVisible] = useState(false);
   const [viewerImages, setViewerImages] = useState([]);
+  const navigation = useNavigation(); // 👈 You forgot this line
 
   const speak = (word) => {
     Speech.speak(word, { language: 'en-IN' });
@@ -81,6 +83,14 @@ export default function Lesson1() {
           enableSwipeDown={true}
         />
       </Modal>
+
+      {/* 🔹 Navigate to Match the Following */}
+      <TouchableOpacity
+        style={[styles.decodeButton, { backgroundColor: '#f39c12', marginBottom: 40 }]}
+        onPress={() => navigation.navigate('MatchTheFollowing')}
+      >
+        <Text style={styles.buttonText}>Play Match the Following</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }

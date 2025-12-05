@@ -5,7 +5,7 @@ const Header = () => {
   return (
     <View style={styles.headerContainer}>
       <Image
-        source={require('../../assets/logo.png')} // Replace with your logo's path
+        source={require('../../assets/hearme.jpg')} // Replace with your logo's path
         style={styles.logo}
         resizeMode="contain"
       />

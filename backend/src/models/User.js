@@ -16,9 +16,16 @@ const userSchema = new mongoose.Schema({
   },
    phoneNo: {
     type: String,
-    required: true,
+    
     unique: true, // Ensured uniqueness
-  }
+  },
+   // OTP / password-reset fields
+  resetOtp: { type: String },                  // hashed OTP (sha256)
+  resetOtpExpires: { type: Date },             // expiry timestamp
+  resetOtpAttempts: { type: Number, default: 0 },
+
+  // Track when password was last changed (useful to invalidate JWTs)
+  passwordChangedAt: { type: Date },
 
 }, { timestamps: true });
 
