@@ -29,9 +29,11 @@ allprojects {
 
     google()
     mavenCentral()
+    maven { url 'https://artifact.agora.io/repository/maven' } // ✅ Agora Maven repo
     maven { url 'https://www.jitpack.io' }
   }
 }
+
 
 apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"

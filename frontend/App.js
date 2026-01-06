@@ -1,41 +1,54 @@
 import React, { useContext } from "react";
-import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AuthProvider, default as AuthContext } from "./src/context/AuthContext";
+import SocketManager from "./src/SocketManager";
+import VoiceCallScreen from "./src/screens/VoiceCallScreen"; // Example import
 
-// Import your screens and navigators
+// Import screens
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
-import LoginScreen from "./src/screens/LoginScreen"; 
-import RegisterScreen from "./src/screens/RegisterScreen"; 
-import SplashScreen from "./src/screens/SplashScreen"; // Import the SplashScreen
+import LoginScreen from "./src/screens/LoginScreen";
+import RegisterScreen from "./src/screens/RegisterScreen";
+import SplashScreen from "./src/screens/SplashScreen";
 
+// NEW: Forgot password / OTP screens
+import ForgotPasswordScreen from "./src/screens/ForgotPasswordScreen";
+import OtpVerifyScreen from "./src/screens/OtpVerifyScreen";
 
 const Stack = createStackNavigator();
 
 function AppNav() {
+  console.log(" AppNav rendering");
   const { userToken, isLoading } = useContext(AuthContext);
 
   if (isLoading) {
-    // Show the SplashScreen explicitly while authentication is being checked
+    // Show SplashScreen while checking authentication
     return <SplashScreen />;
   }
-
+  console.log("userToken in AppNav:", userToken);
   return (
     <NavigationContainer>
+      {/* Mount SocketManager only if user is logged in */}
+      {userToken != null && <SocketManager />}
+
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userToken == null ? (
-          // No token found, show the authentication screens
+          // Authentication screens (unauthenticated)
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
-             
+
+            {/* Forgot password flow — accessible when not logged in */}
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+            <Stack.Screen name="OtpVerify" component={OtpVerifyScreen} />
           </>
         ) : (
-          // A token was found, show the main app
-          <Stack.Screen name="MainApp" component={BottomTabNavigator} />
+          // Main app (authenticated)
+          <>
+            <Stack.Screen name="MainApp" component={BottomTabNavigator} />
+            <Stack.Screen name="VoiceCallScreen" component={VoiceCallScreen} />
+          </>
         )}
-      
       </Stack.Navigator>
     </NavigationContainer>
   );

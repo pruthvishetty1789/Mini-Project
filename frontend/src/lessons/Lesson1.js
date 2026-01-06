@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal } fr
 import * as Speech from 'expo-speech';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
-// ✅ Create a mapping of alphabets to their images
 const alphabetImages = {
   a: require('../../assets/a.jpg'),
   b: require('../../assets/b.jpg'),
@@ -33,7 +32,7 @@ const alphabetImages = {
   z: require('../../assets/z.jpg'),
 };
 
-export default function Lesson1() {
+export default function Lesson1({ navigation }) {
   const alphabets = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
   const [isViewerVisible, setIsViewerVisible] = useState(false);
   const [viewerImages, setViewerImages] = useState([]);
@@ -55,7 +54,11 @@ export default function Lesson1() {
         <View key={index} style={styles.questionContainer}>
           <Text style={styles.questionText}>{letter}</Text>
 
-          <TouchableOpacity onPress={() => handleImagePress(alphabetImages[letter.toLowerCase()])}>
+          <TouchableOpacity
+            onPress={() =>
+              handleImagePress(alphabetImages[letter.toLowerCase()])
+            }
+          >
             <Image
               source={alphabetImages[letter.toLowerCase()]}
               style={styles.signImage}
@@ -67,11 +70,22 @@ export default function Lesson1() {
             This sign is for the letter {letter}.
           </Text>
 
-          <TouchableOpacity style={styles.decodeButton} onPress={() => speak(letter)}>
+          <TouchableOpacity
+            style={styles.decodeButton}
+            onPress={() => speak(letter)}
+          >
             <Text style={styles.buttonText}>Speak</Text>
           </TouchableOpacity>
         </View>
       ))}
+
+      {/* 🔹 Match The Following button */}
+      <TouchableOpacity
+        style={styles.quizButton}
+        onPress={() => navigation.navigate('MatchTheFollowing')}
+      >
+        <Text style={styles.quizButtonText}>Start Match The Following</Text>
+      </TouchableOpacity>
 
       {/* Fullscreen Image Viewer */}
       <Modal visible={isViewerVisible} transparent={true}>
@@ -141,5 +155,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+
+  // 🔹 Match The Following button styles
+  quizButton: {
+    marginTop: 10,
+    marginBottom: 40,
+    backgroundColor: '#6c5ce7',
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    borderRadius: 30,
+  },
+  quizButtonText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#fff',
+    textAlign: 'center',
   },
 });

@@ -10,14 +10,13 @@ import {
   Platform,
   Dimensions,
   Alert,
-  ActivityIndicator // <-- This line was missing
+  ActivityIndicator
 } from 'react-native';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
-
-const API_URL = 'http://10.151.99.231:5000/api'; 
+const API_URL = 'http://10.12.249.231:5000/api';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -26,17 +25,30 @@ export default function LoginScreen({ navigation }) {
   const { login } = useContext(AuthContext);
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Validation', 'Please enter both email and password.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await axios.post(`${API_URL}/login`, { email, password });
-      
-      await login(response.data.token); 
-      
+      const token = response.data?.token;
+      // server might return phone or phoneNo; handle both
+      const phone = response.data?.phone || response.data?.phoneNo || null;
+
+      if (!token) {
+        Alert.alert('Login Failed', 'No token returned from server.');
+        setIsLoading(false);
+        return;
+      }
+
+      await login(token, phone); // Pass both token and phone (phone can be null)
       Alert.alert('Success', 'Logged in successfully!');
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
       Alert.alert('Login Failed', errorMessage);
-      console.error(error);
+      console.error('Login error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -46,6 +58,10 @@ export default function LoginScreen({ navigation }) {
     navigation.navigate('Register');
   };
 
+  const handleForgotPassword = () => {
+    navigation.navigate('ForgotPassword'); // ensure this screen is registered in navigator
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -53,7 +69,7 @@ export default function LoginScreen({ navigation }) {
     >
       <View style={styles.logoContainer}>
         <Image
-          source={require('../../assets/logo.png')}
+          source={require('../../assets/logohome.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -80,6 +96,11 @@ export default function LoginScreen({ navigation }) {
           onChangeText={setPassword}
           secureTextEntry
         />
+
+        {/* Forgot password link */}
+        <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotContainer}>
+          <Text style={styles.forgotText}>Forgot password?</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={isLoading}>
           {isLoading ? (
@@ -146,6 +167,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
+  },
+  forgotContainer: {
+    width: '100%',
+    alignItems: 'flex-end',
+    marginBottom: 12,
+  },
+  forgotText: {
+    color: '#4a90e2',
+    fontWeight: '600',
   },
   loginButton: {
     width: '100%',

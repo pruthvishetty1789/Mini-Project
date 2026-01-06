@@ -12,11 +12,14 @@ export const AuthProvider = ({ children }) => {
   // This function fetches the user's profile and sets it in state
   const fetchProfile = async (token) => {
     try {
-      const response = await axios.get('http://10.151.99.231:5000/api/profile', {
+      console.log('Sending token:', token);
+
+      const response = await axios.get('http://10.12.249.231:5000/api/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("Raw profile response:", response.data)
       setProfile(response.data);
     } catch (e) {
       console.error('Failed to fetch profile:', e);
@@ -25,11 +28,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+
+
     const bootstrapAsync = async () => {
       let token = null;
       try {
         await new Promise(resolve => setTimeout(resolve, 3000));
-        token = await AsyncStorage.getItem('userToken');
+        token = await AsyncStorage.getItem('token');
+        const phone = await AsyncStorage.getItem('myPhone');
+        setProfile(prev => ({ ...prev, phoneNo: phone }));
+        console.log(phone)
         setUserToken(token);
         if (token) {
           await fetchProfile(token); // Fetch profile on app start if token exists
@@ -41,12 +49,15 @@ export const AuthProvider = ({ children }) => {
       }
     };
     bootstrapAsync();
+
   }, []);
 
-  const login = async (token) => {
+  const login = async (token,phoneNo) => {
     try {
-      await AsyncStorage.setItem('userToken', token);
+      await AsyncStorage.setItem('token', token);
+      await AsyncStorage.setItem('myPhone', phoneNo);
       setUserToken(token);
+      setProfile(prev => ({ ...prev, phoneNo }));
       await fetchProfile(token); // Fetch profile on login
     } catch (e) {
       console.error('Failed to save token:', e);
@@ -55,7 +66,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('userToken');
+      await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('myPhone');
       setUserToken(null);
       setProfile(null); // Clear profile on logout
     } catch (e) {
@@ -69,7 +81,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ userToken, isLoading, profile, login, logout, updateProfile }}>
+    <AuthContext.Provider value={{ userToken, setUserToken, isLoading, profile, login, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

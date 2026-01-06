@@ -4,7 +4,7 @@ import { View, Text, Image, StyleSheet } from "react-native";
 export default function SplashScreen({ onFinish }) {
   return (
     <View style={styles.container}>
-      <Image source={require("../../assets/logo.png")} style={styles.logo} />
+      <Image source={require("../../assets/logohome.png")} style={styles.logo} />
       {/* <Text style={styles.text}>Welcome to My App </Text> */}
     </View>
   );
