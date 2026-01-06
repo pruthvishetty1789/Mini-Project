@@ -37,7 +37,7 @@ export default function VoiceCallScreen({ route }) {
   const [isListening, setIsListening] = useState(false);
 
   const engineRef = useRef(null);
-  const AGORA_APP_ID = "26bb74e74bb6431eabe4d223fd13fcbd";
+  const AGORA_APP_ID = "Agora ID";
 
   useEffect(() => {
     Tts.setDefaultLanguage("en-US");
